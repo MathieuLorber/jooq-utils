@@ -21,7 +21,8 @@ object DatasourcePool {
             DatabaseConfiguration.Driver.psql ->
                 // TODO centralize
                 "org.postgresql.ds.PGSimpleDataSource"
-            DatabaseConfiguration.Driver.mysql -> TODO()
+            DatabaseConfiguration.Driver.mysql ->
+                "com.mysql.cj.jdbc.MysqlDataSource"
         }
         val clazz = Class.forName(className) as Class<DataSource>
         val datasource = clazz.getDeclaredConstructor().newInstance()
@@ -32,7 +33,9 @@ object DatasourcePool {
             DatabaseConfiguration.Driver.psql -> {
                 invokeMethod(clazz, datasource, "setServerNames", arrayOf("localhost"))
             }
-            DatabaseConfiguration.Driver.mysql -> TODO()
+            DatabaseConfiguration.Driver.mysql -> {
+                invokeMethod(clazz, datasource, "setServerName", "localhost")
+            }
         }.let { Unit /* force exhaustive when() */ }
         invokeMethod(clazz, datasource, "setDatabaseName", configuration.databaseName)
         invokeMethod(clazz, datasource, "setUser", configuration.user)

@@ -7,7 +7,6 @@ import jooqutils.util.ShellRunner
 import mu.KotlinLogging
 import org.jooq.codegen.GenerationTool
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 
 object JooqGeneration {
@@ -16,12 +15,10 @@ object JooqGeneration {
 
     fun generateJooq(
         conf: DatabaseConfiguration,
-        sqlFilesPath: Path,
         excludeTables: Set<String> = emptySet(),
         generatedPackageName: String,
         generatedCodePath: String
     ) {
-        DatabaseInitializer.initialize(conf, sqlFilesPath)
         GenerationTool.generate(
             JooqConfiguration.generateConfiguration(
                 conf = conf,

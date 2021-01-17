@@ -1,0 +1,28 @@
+package jooqutils.integrationtest
+
+import jooqutils.DatabaseCleaner
+import jooqutils.DatabaseConfiguration
+import jooqutils.DatabaseInitializer
+import org.junit.Test
+import java.nio.file.Paths
+
+class ResetDatabase {
+
+    @Test
+    fun `test reset Orgarif Mysql database`() {
+        val sqlFilesPath = Paths.get("${System.getProperty("user.dir")}/src/test/resources/orgarif")
+        val conf = DatabaseConfiguration(
+            DatabaseConfiguration.Driver.mysql,
+            "dbtooling-orgarif-test",
+            "root",
+            "",
+            emptySet(),
+            null
+        )
+        DatabaseInitializer.createDb(conf)
+        DatabaseCleaner.clean(conf, null)
+        DatabaseInitializer.initializeSchema(conf, sqlFilesPath, null)
+    }
+
+
+}

@@ -43,11 +43,6 @@ object JooqConfiguration {
                     .withPassword(conf.password)
             )
             .withGenerator(Generator()
-                .apply {
-                    if (generatorClass != null) {
-                        withName(generatorClass.java.name)
-                    }
-                }
                 .withDatabase(Database()
                     .withName(
                         when (conf.driver) {
@@ -58,10 +53,19 @@ object JooqConfiguration {
                     .withIncludes(".*")
                     .withExcludes(excludeTables.joinToString(separator = "|"))
                     .apply {
-                        if (conf.schemas.isNotEmpty()) {
-                            withSchemata(conf.schemas
-                                .map { SchemaMappingType().withInputSchema(it) })
-                        }
+                        when (conf.driver) {
+                            DatabaseConfiguration.Driver.psql -> {
+                                if (conf.schemas.isNotEmpty()) {
+                                    withSchemata(conf.schemas
+                                        .map { SchemaMappingType().withInputSchema(it) })
+                                } else {
+                                }
+                            }
+                            DatabaseConfiguration.Driver.mysql -> {
+                                withSchemata(SchemaMappingType().withInputSchema(conf.databaseName))
+                            }
+                        }.let { Unit }
+
                     }
                     .apply {
                         val timeStampForcedType = ForcedType().apply {

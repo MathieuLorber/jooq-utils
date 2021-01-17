@@ -9,7 +9,6 @@ import org.jooq.impl.DependenciesParser
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.sql.Statement
 
 object DatabaseInitializer {
@@ -17,18 +16,35 @@ object DatabaseInitializer {
     private val logger = KotlinLogging.logger {}
 
     // TODO should be useless - jooq does it
-    fun dump(conf: DatabaseConfiguration) = when (conf.driver) {
-        DatabaseConfiguration.Driver.psql ->
-            // TODO export PGPASSWORD="$put_here_the_password"
-            ShellRunner.run("pg_dump", "-s", conf.databaseName, "--schema-only")
-        DatabaseConfiguration.Driver.mysql ->
-            ShellRunner.run("mysqldump", "--no-data", "-u", conf.user, "--password=" + conf.password, conf.databaseName)
+    fun dump(conf: DatabaseConfiguration): ShellRunner.CommandResult {
+        val dump = when (conf.driver) {
+            DatabaseConfiguration.Driver.psql ->
+                // TODO export PGPASSWORD="$put_here_the_password"
+                ShellRunner.run("pg_dump", "-s", conf.databaseName, "--schema-only")
+            DatabaseConfiguration.Driver.mysql ->
+                ShellRunner.run(
+                    "mysqldump",
+                    "--no-data",
+                    "--user",
+                    conf.user,
+                    "--password=" + conf.password,
+                    conf.databaseName
+                )
+        }
+        logger.debug { "Dump" }
+        if (logger.isDebugEnabled) {
+            dump.lines.forEach {
+                logger.debug { it }
+            }
+        }
+        return dump
     }
 
     fun createDb(conf: DatabaseConfiguration) =
         when (conf.driver) {
             DatabaseConfiguration.Driver.psql -> ShellRunner.run("createdb", conf.databaseName)
-            DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf).connection.createStatement()
+            DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
+                .createStatement()
                 .use { statement ->
                     statement.execute("create database if not exists `${conf.databaseName}`")
                 }
@@ -37,14 +53,15 @@ object DatabaseInitializer {
     fun dropDb(conf: DatabaseConfiguration): Unit =
         when (conf.driver) {
             DatabaseConfiguration.Driver.psql -> ShellRunner.run("dropdb", conf.databaseName)
-            DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf).connection.createStatement()
+            DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
+                .createStatement()
                 .use { statement ->
                     statement.execute("drop database if exists `${conf.databaseName}`;")
                 }
         }.let { Unit /* force exhaustive when() */ }
 
-    fun initialize(conf: DatabaseConfiguration, sqlFilesPath: Path) {
-        val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
+    fun initializeSchema(conf: DatabaseConfiguration, sqlFilesPath: Path, sqlResultFile: Path?) {
+        val sqlQueries = listSqlFiles(sqlFilesPath.resolve("schema").toFile())
             .map { file ->
                 ByteStreams
                     .toByteArray(file.inputStream())
@@ -52,14 +69,14 @@ object DatabaseInitializer {
                     .let { SqlQueryString(file.toPath(), it) }
             }
         val dependenciesSet = DependenciesParser.getDependenciesSet(sqlQueries, conf)
-        val sb = StringBuilder()
+        val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
-            createTables(dependenciesSet, emptySet(), statement, sb)
+            execute(conf.driver, dependenciesSet, emptySet(), statement, sb)
         }
-        // TODO dir must be a parameter
-//        val createTablesFile = Paths.get(System.getProperty("user.dir"), "/jooq-lib/build/db/create-tables.sql")
-//        createTablesFile.toFile().parentFile.mkdirs()
-//        Files.write(createTablesFile, sb.toString().toByteArray(Charsets.UTF_8))
+        if (sqlResultFile != null) {
+            sqlResultFile.toFile().parentFile.mkdirs()
+            Files.write(sqlResultFile, sb.toString().toByteArray(Charsets.UTF_8))
+        }
     }
 
     private fun listSqlFiles(sqlFilesDir: File): List<File> =
@@ -75,30 +92,42 @@ object DatabaseInitializer {
         }
 
     // TODO should fail if user try to insert ?
-    private fun createTables(
+    private fun execute(
+        driver: DatabaseConfiguration.Driver,
         dependenciesList: Set<DependenciesParser.QueryDependencies>,
         alreadyCreated: Set<Table<*>>,
         statement: Statement,
-        sb: StringBuilder
+        sb: StringBuilder?
     ) {
         val createTables = dependenciesList
             .filter { (it.references.tables - alreadyCreated).isEmpty() }
         logger.debug { "Create tables from files ${createTables.map { it.query.filePath }.filterNotNull()}" }
         logger.debug { "Create tables ${createTables.flatMap { it.tables.map { it.name } }}" }
         createTables.forEach {
-            statement.execute(it.query.sql)
-            sb.appendLine(it.query.sql + ";")
-            sb.appendLine()
+            sb?.appendLine(it.query.sql)
+            sb?.appendLine()
+            when (driver) {
+                DatabaseConfiguration.Driver.psql -> statement.execute(it.query.sql)
+                DatabaseConfiguration.Driver.mysql -> {
+                    it.query.sql.split(";")
+                        .map { it.trim() }
+                        .filter { it != "" }
+                        .forEach {
+                            statement.execute(it)
+                        }
+                }
+            }.let { Unit }
+
         }
         val remainingTables = dependenciesList - createTables
         val created = createTables.flatMap { it.tables }
         if (remainingTables.isNotEmpty()) {
-            createTables(remainingTables, alreadyCreated + created, statement, sb)
+            execute(driver, remainingTables, alreadyCreated + created, statement, sb)
         }
     }
 
     fun insert(conf: DatabaseConfiguration, sqlFilesPath: Path) {
-        val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
+        val sqlQueries = listSqlFiles(sqlFilesPath.resolve("insert").toFile())
             .map { file ->
                 ByteStreams
                     .toByteArray(file.inputStream())

@@ -8,6 +8,8 @@ data class SqlQueryString(
     val sql: String
 )
 
+data class TableReferences(val table: Table<*>, val references: References)
+
 inline class References(val tables: Set<Table<*>>)
 
 // TODO do class by type of db ? So we can specify default port for instance

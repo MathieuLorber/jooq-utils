@@ -5,10 +5,13 @@ import jooqutils.DatabaseConfiguration
 import jooqutils.References
 import jooqutils.SqlQueryString
 import jooqutils.util.DatasourcePool
+import mu.KotlinLogging
 import org.jooq.SQLDialect
 import org.jooq.Table
 
 object DependenciesParser {
+
+    private val logger = KotlinLogging.logger {}
 
     fun jooqDialect(driver: DatabaseConfiguration.Driver) = when (driver) {
         DatabaseConfiguration.Driver.psql -> SQLDialect.POSTGRES
@@ -44,8 +47,8 @@ object DependenciesParser {
                                     when (constraint) {
                                         is ConstraintImpl -> constraint.`$referencesTable`()
                                         else -> {
-                                            // TODO ?
-                                            println(constraint)
+                                            // TODO do something smarter
+                                            logger.debug { constraint }
                                             null
                                         }
                                     }
@@ -56,8 +59,8 @@ object DependenciesParser {
                                     is ConstraintImpl ->
                                         listOf(it.`$referencesTable`()).filterNotNull()
                                     else -> {
-                                        // TODO ?
-                                        println(it)
+                                        // TODO do something smarter
+                                        logger.debug { it }
                                         emptyList()
                                     }
                                 }

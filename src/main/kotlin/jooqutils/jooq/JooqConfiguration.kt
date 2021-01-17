@@ -43,6 +43,13 @@ object JooqConfiguration {
                     .withPassword(conf.password)
             )
             .withGenerator(Generator()
+//                            .apply {
+//                                if (generatorClass != null) {
+//                                    withName(generatorClass.java.name)
+//                                }
+//                            }
+//                .withName(KotlinGenerator::class.java.name)
+//                            .withName("org.jooq.codegen.KotlinGenerator")
                 .withDatabase(Database()
                     .withName(
                         when (conf.driver) {

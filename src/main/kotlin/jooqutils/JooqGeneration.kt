@@ -7,6 +7,7 @@ import jooqutils.util.ShellRunner
 import mu.KotlinLogging
 import org.jooq.codegen.GenerationTool
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 object JooqGeneration {
@@ -30,34 +31,39 @@ object JooqGeneration {
         )
     }
 
-    // TODO should take 2 conf
-    fun generateDiff(conf: DatabaseConfiguration, diffDatabaseName: String) {
+    fun generateDiff(
+        conf: DatabaseConfiguration,
+        diffConf: DatabaseConfiguration,
+        destinationPath: Path
+    ) {
         if (conf.pgQuarrel == null) {
-            // TODO logs
-//            logger
+            logger.error { "No pgquarrel configured" }
+            return
+        }
+        // TODO
+        if (!conf.password.isEmpty() || !diffConf.password.isEmpty()) {
+            logger.error { "Can't handle passwords with pgquarrel yet" }
             return
         }
         val hashRunDatabase = dumpHash(conf)
-        val hashGenerateDatabase = dumpHash(conf.copy(databaseName = diffDatabaseName))
+        val hashGenerateDatabase = dumpHash(diffConf)
         if (hashRunDatabase != hashGenerateDatabase) {
             val commandResult = ShellRunner.run(
                 conf.pgQuarrel,
-                // TODO use conf ;)
-                "--source-host=localhost",
-                "--source-port=5432",
-                "--source-dbname=${diffDatabaseName}",
-                "--source-user=${System.getProperty("user.name")}",
+                "--source-host=${diffConf.host}",
+                "--source-port=${diffConf.port}",
+                "--source-dbname=${diffConf.databaseName}",
+                "--source-user=${diffConf.user}",
                 "--source-no-password",
-                "--target-host=localhost",
-                "--target-port=5432",
+                "--target-host=${conf.host}",
+                "--target-port=${conf.port}",
                 "--target-dbname=${conf.databaseName}",
-                "--target-user=${System.getProperty("user.name")}",
+                "--target-user=${conf.user}",
                 "--target-no-password"
             )
             val diff = commandResult.lines.fold("") { acc, s -> acc + "\n" + s }
-            val file = Paths.get(
-                System.getProperty("user.dir"), "/jooq-lib/build/db-diff/diff-" +
-                        hashRunDatabase.substring(0, 8) + "-" + hashGenerateDatabase.substring(0, 8) + ".sql"
+            val file = destinationPath.resolve(
+                "diff-" + hashRunDatabase.substring(0, 8) + "-" + hashGenerateDatabase.substring(0, 8) + ".sql"
             )
             logger.info { "Writing diff to $file" }
             file.toFile().parentFile.mkdirs()

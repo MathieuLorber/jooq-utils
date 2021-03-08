@@ -18,11 +18,13 @@ class GenerateJooq {
         val sqlFilesPath = Paths.get("${System.getProperty("user.dir")}/src/test/resources/orgarif")
         val conf = DatabaseConfiguration(
             DatabaseConfiguration.Driver.mysql,
+            "localhost",
+            5432,
             "dbtooling-orgarif-test",
             "root",
             "",
             emptySet(),
-            null
+            "/Users/mlo/git/pgquarrel/pgquarrel"
         )
         try {
             DatabaseInitializer.dropDb(conf)

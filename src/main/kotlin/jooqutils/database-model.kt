@@ -15,6 +15,9 @@ inline class References(val tables: Set<Table<*>>)
 // TODO do class by type of db ? So we can specify default port for instance
 data class DatabaseConfiguration(
     val driver: Driver,
+    // TODO for the moment the library only handle localhost:5432
+    val host: String,
+    val port: Int,
     val databaseName: String,
     val user: String,
     val password: String,

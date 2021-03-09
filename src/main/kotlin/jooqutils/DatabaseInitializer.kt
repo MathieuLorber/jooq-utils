@@ -61,7 +61,7 @@ object DatabaseInitializer {
         }.let { Unit /* force exhaustive when() */ }
 
     fun initializeSchema(conf: DatabaseConfiguration, sqlFilesPath: Path, sqlResultFile: Path?) {
-        val sqlQueries = listSqlFiles(sqlFilesPath.resolve("schema").toFile())
+        val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
             .map { file ->
                 ByteStreams
                     .toByteArray(file.inputStream())
@@ -127,7 +127,7 @@ object DatabaseInitializer {
     }
 
     fun insert(conf: DatabaseConfiguration, sqlFilesPath: Path) {
-        val sqlQueries = listSqlFiles(sqlFilesPath.resolve("insert").toFile())
+        val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
             .map { file ->
                 ByteStreams
                     .toByteArray(file.inputStream())

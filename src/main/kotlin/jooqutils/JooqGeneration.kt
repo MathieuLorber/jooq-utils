@@ -14,6 +14,8 @@ object JooqGeneration {
 
     private val logger = KotlinLogging.logger {}
 
+    val noHash = "NOHASH"
+
     fun generateJooq(
         conf: DatabaseConfiguration,
         excludeTables: Set<String> = emptySet(),
@@ -63,7 +65,7 @@ object JooqGeneration {
             )
             val diff = commandResult.lines.fold("") { acc, s -> acc + "\n" + s }
             val file = destinationPath.resolve(
-                "diff-" + hashRunDatabase.substring(0, 8) + "-" + hashGenerateDatabase.substring(0, 8) + ".sql"
+                "diff-" + shortenHash(hashRunDatabase) + "-" + shortenHash(hashGenerateDatabase) + ".sql"
             )
             logger.info { "Writing diff to $file" }
             file.toFile().parentFile.mkdirs()
@@ -73,9 +75,15 @@ object JooqGeneration {
 
     fun dumpHash(conf: DatabaseConfiguration): String {
         val dumpResult = DatabaseInitializer.dump(conf)
+        if (dumpResult.lines.isEmpty()) {
+            return noHash
+        }
         val dump = dumpResult.lines.reduce { acc, s -> "$acc\n$s" }
         return Hashing.sha256()
             .hashString(dump, Charsets.UTF_8)
             .toString()
     }
+
+    fun shortenHash(hash: String) = if (hash != noHash) hash.substring(0, 8) else hash
+
 }

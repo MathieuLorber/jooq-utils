@@ -3,6 +3,7 @@ package jooqutils
 import com.google.common.io.ByteStreams
 import jooqutils.util.DatasourcePool
 import jooqutils.util.ShellRunner
+import jooqutils.util.StatementExecutor
 import mu.KotlinLogging
 import org.jooq.Table
 import org.jooq.impl.DependenciesParser
@@ -107,7 +108,7 @@ object DatabaseInitializer {
             sb?.appendLine(it.query.sql)
             sb?.appendLine()
             when (driver) {
-                DatabaseConfiguration.Driver.psql -> statement.execute(it.query.sql)
+                DatabaseConfiguration.Driver.psql -> StatementExecutor.execute(statement, it.query.sql)
                 DatabaseConfiguration.Driver.mysql -> {
                     it.query.sql.split(";")
                         .map { it.trim() }

@@ -1,5 +1,6 @@
 package jooqutils.integrationtest
 
+import com.mysql.cj.jdbc.MysqlDataSource
 import jooqutils.DatabaseCleaner
 import jooqutils.DatabaseConfiguration
 import jooqutils.DatabaseInitializer

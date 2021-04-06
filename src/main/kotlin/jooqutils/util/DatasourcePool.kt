@@ -32,12 +32,13 @@ object DatasourcePool {
         when (configuration.driver) {
             DatabaseConfiguration.Driver.psql -> {
                 invokeMethod(clazz, datasource, "setServerNames", arrayOf(configuration.host))
+                invokeMethod(clazz, datasource, "setPortNumbers", arrayOf(configuration.port))
             }
             DatabaseConfiguration.Driver.mysql -> {
                 invokeMethod(clazz, datasource, "setServerName", configuration.host)
+                invokeMethod(clazz, datasource, "setPortNumber", configuration.port)
             }
         }.let { Unit /* force exhaustive when() */ }
-        invokeMethod(clazz, datasource, "setPort", configuration.port)
         invokeMethod(clazz, datasource, "setDatabaseName", configuration.databaseName)
         invokeMethod(clazz, datasource, "setUser", configuration.user)
         invokeMethod(clazz, datasource, "setPassword", configuration.password)

@@ -32,7 +32,7 @@ object DatasourcePool {
         when (configuration.driver) {
             DatabaseConfiguration.Driver.psql -> {
                 invokeMethod(clazz, datasource, "setServerNames", arrayOf(configuration.host))
-                invokeMethod(clazz, datasource, "setPortNumbers", arrayOf(configuration.port))
+                invokeMethod(clazz, datasource, "setPortNumbers", intArrayOf(configuration.port))
             }
             DatabaseConfiguration.Driver.mysql -> {
                 invokeMethod(clazz, datasource, "setServerName", configuration.host)

@@ -40,6 +40,7 @@ object DatabaseCleaner {
                             .filter { "SET DEFAULT nextval" !in it }
                             .filter { "REVOKE ALL" !in it }
                             .filter { "GRANT SELECT ON SEQUENCE" !in it }
+                            .filter { "GRANT ALL ON TABLE" !in it }
                     }
                     DatabaseConfiguration.Driver.mysql -> {
                         it

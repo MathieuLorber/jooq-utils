@@ -21,7 +21,21 @@ object DatabaseInitializer {
         val dump = when (conf.driver) {
             DatabaseConfiguration.Driver.psql ->
                 // TODO export PGPASSWORD="$put_here_the_password"
-                ShellRunner.run("pg_dump", "-s", conf.databaseName, "--schema-only")
+                // -h bteiwyharfrwixoev1pr-postgresql.services.clever-cloud.com -p 5551 -U uyugupggbagqpqk0afsb
+                ShellRunner.run(
+                    "PGPASSWORD=${conf.password}",
+                    "&&",
+                    "pg_dump",
+                    "-h",
+                    conf.host,
+                    "-p",
+                    conf.port.toString(),
+                    "-U",
+                    conf.user,
+                    "-d",
+                    conf.databaseName,
+                    "--schema-only"
+                )
             DatabaseConfiguration.Driver.mysql ->
                 ShellRunner.run(
                     "mysqldump",

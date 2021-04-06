@@ -7,6 +7,7 @@ import jooqutils.TableReferences
 import jooqutils.util.DatasourcePool
 import mu.KotlinLogging
 import org.jooq.Table
+import java.util.concurrent.atomic.AtomicBoolean
 
 object QueryParser {
 
@@ -23,7 +24,20 @@ object QueryParser {
     // TODO shitty signature obvsly
     fun classifyQueries(queries: List<SqlQueryString>, conf: DatabaseConfiguration): Queries {
         val jooqDsl = DSL.using(DatasourcePool.get(conf), DependenciesParser.jooqDialect(conf.driver))
-        val jooqQueries = queries.flatMap { jooqDsl.parser().parse(it.sql).queries().toList() }
+        val parsingError = AtomicBoolean(false)
+        val jooqQueries = queries.flatMap {
+            try {
+                val parse = jooqDsl.parser().parse(it.sql)
+                parse.queries().toList()
+            } catch (e: ParserException) {
+                logger.error(e) { "Jooq parsing exception : ${it.sql}" }
+                parsingError.set(true)
+                emptyList()
+            }
+        }
+        if (parsingError.get()) {
+            throw RuntimeException("One or multiple Jooq parsing exception.")
+        }
         val index = jooqQueries.filterIsInstance<CreateIndexImpl>().map { it.`$index`().name }
         val constraints = jooqQueries.filterIsInstance<AlterTableImpl>()
             .map {

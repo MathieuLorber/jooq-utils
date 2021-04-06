@@ -30,7 +30,7 @@ object QueryParser {
                 val parse = jooqDsl.parser().parse(it.sql)
                 parse.queries().toList()
             } catch (e: ParserException) {
-                logger.error(e) { "Jooq parsing exception : ${it.sql}" }
+                logger.error { "Jooq parsing exception : ${it.sql}" }
                 parsingError.set(true)
                 emptyList()
             }

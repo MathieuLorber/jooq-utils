@@ -142,6 +142,10 @@ object DatabaseInitializer {
     }
 
     fun insert(conf: DatabaseConfiguration, sqlFilesPath: Path) {
+        if (!sqlFilesPath.toFile().exists()) {
+            // TODO log ?
+            return
+        }
         val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
             .map { file ->
                 ByteStreams

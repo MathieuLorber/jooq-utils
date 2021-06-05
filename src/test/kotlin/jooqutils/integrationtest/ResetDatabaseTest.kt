@@ -1,13 +1,12 @@
 package jooqutils.integrationtest
 
-import com.mysql.cj.jdbc.MysqlDataSource
 import jooqutils.DatabaseCleaner
 import jooqutils.DatabaseConfiguration
 import jooqutils.DatabaseInitializer
 import org.junit.Test
 import java.nio.file.Paths
 
-class ResetDatabase {
+class ResetDatabaseTest {
 
     @Test
     fun `test reset Orgarif Mysql database`() {

@@ -35,8 +35,8 @@ object JooqConfiguration {
                     )
                     .withUrl(
                         when (conf.driver) {
-                            DatabaseConfiguration.Driver.psql -> "jdbc:postgresql://localhost/${conf.databaseName}"
-                            DatabaseConfiguration.Driver.mysql -> "jdbc:mysql://localhost/${conf.databaseName}?serverTimezone=UTC"
+                            DatabaseConfiguration.Driver.psql -> "jdbc:postgresql://${conf.host}/${conf.databaseName}"
+                            DatabaseConfiguration.Driver.mysql -> "jdbc:mysql://${conf.host}/${conf.databaseName}?serverTimezone=UTC"
                         }
                     )
                     .withUser(conf.user)

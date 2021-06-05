@@ -3,15 +3,10 @@ package jooqutils.integrationtest
 import jooqutils.DatabaseConfiguration
 import jooqutils.DatabaseInitializer
 import jooqutils.JooqGeneration
-import mu.KotlinLogging
 import org.junit.Test
-import java.io.File
-import java.io.FileInputStream
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
 
-class GenerateJooq {
+class GenerateJooqTest {
 
     @Test
     fun `test generate Orgarif Jooq files`() {

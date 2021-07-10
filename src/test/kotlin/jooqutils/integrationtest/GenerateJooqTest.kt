@@ -19,6 +19,7 @@ class GenerateJooqTest {
             "root",
             "",
             emptySet(),
+            "/usr/local/bin",
             "/Users/mlo/git/pgquarrel/pgquarrel"
         )
         try {

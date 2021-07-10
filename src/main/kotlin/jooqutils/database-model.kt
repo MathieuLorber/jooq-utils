@@ -2,6 +2,7 @@ package jooqutils
 
 import org.jooq.Table
 import java.nio.file.Path
+import java.nio.file.Paths
 
 data class SqlQueryString(
     val filePath: Path?,
@@ -22,6 +23,7 @@ data class DatabaseConfiguration(
     val user: String,
     val password: String,
     val schemas: Set<String>,
+    val executablesPath: String,
     val pgQuarrel: String?
 ) {
     enum class Driver {

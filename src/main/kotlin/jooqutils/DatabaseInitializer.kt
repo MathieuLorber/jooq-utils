@@ -11,6 +11,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Statement
+import kotlin.io.path.div
 
 object DatabaseInitializer {
 
@@ -25,7 +26,8 @@ object DatabaseInitializer {
                 ShellRunner.run(
                     "PGPASSWORD=${conf.password}",
                     "&&",
-                    "pg_dump",
+                    // FIXME conf path pg_dump
+                    "${conf.executablesPath}/pg_dump",
                     "-h",
                     conf.host,
                     "-p",
@@ -57,7 +59,8 @@ object DatabaseInitializer {
 
     fun createDb(conf: DatabaseConfiguration) =
         when (conf.driver) {
-            DatabaseConfiguration.Driver.psql -> ShellRunner.run("createdb", conf.databaseName)
+            // FIXME conf for createdb path
+            DatabaseConfiguration.Driver.psql -> ShellRunner.run("${conf.executablesPath}/createdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
                 .createStatement()
                 .use { statement ->
@@ -67,7 +70,8 @@ object DatabaseInitializer {
 
     fun dropDb(conf: DatabaseConfiguration): Unit =
         when (conf.driver) {
-            DatabaseConfiguration.Driver.psql -> ShellRunner.run("dropdb", conf.databaseName)
+            // FIXME conf for dropdb path
+            DatabaseConfiguration.Driver.psql -> ShellRunner.run("${conf.executablesPath}/dropdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
                 .createStatement()
                 .use { statement ->

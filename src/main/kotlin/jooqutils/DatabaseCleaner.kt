@@ -24,6 +24,7 @@ object DatabaseCleaner {
                 }
             }
             .joinToString(separator = "\n")
+        logger.debug { fullDump }
         val queries = fullDump.split("\n\n")
         val filteredQueries = queries
             .map { it.trim() }

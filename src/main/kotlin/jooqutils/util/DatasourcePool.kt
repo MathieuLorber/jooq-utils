@@ -41,7 +41,7 @@ object DatasourcePool {
         }.let { Unit /* force exhaustive when() */ }
         invokeMethod(clazz, datasource, "setDatabaseName", configuration.databaseName)
         invokeMethod(clazz, datasource, "setUser", configuration.user)
-        invokeMethod(clazz, datasource, "setPassword", configuration.password)
+        invokeMethod(clazz, datasource, "setPassword", configuration.password ?: "")
         return datasource
     }
 

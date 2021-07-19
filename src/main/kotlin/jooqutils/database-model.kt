@@ -21,7 +21,7 @@ data class DatabaseConfiguration(
     val port: Int,
     val databaseName: String,
     val user: String,
-    val password: String,
+    val password: String?,
     val schemas: Set<String>,
     val executablesPath: String?,
     val pgQuarrel: String?

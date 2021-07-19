@@ -43,7 +43,7 @@ object JooqGeneration {
             return
         }
         // TODO
-        if (!conf.password.isEmpty() || !diffConf.password.isEmpty()) {
+        if (conf.password.isNotEmpty() || diffConf.password.isNotEmpty()) {
             logger.error { "Can't handle passwords with pgquarrel yet" }
             return
         }

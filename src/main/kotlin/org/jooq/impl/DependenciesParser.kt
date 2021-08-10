@@ -69,8 +69,9 @@ object DependenciesParser {
                                 // TODO permit constraints too !
                                 // see dump
                             is CreateIndexImpl -> emptyList()
-                            // is Delete/Insert/Update
-                            is AbstractDelegatingRowCountQuery<*> -> emptyList()
+                            is InsertImpl<*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *> -> emptyList()
+                            is UpdateImpl<*> -> emptyList()
+                            is DeleteImpl<*> -> emptyList()
                             else -> throw NotImplementedError(query.javaClass.name)
                         }
                     }

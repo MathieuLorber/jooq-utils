@@ -11,7 +11,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Statement
-import kotlin.io.path.div
 
 object DatabaseInitializer {
 
@@ -151,15 +150,17 @@ object DatabaseInitializer {
             return
         }
         val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
+            .sortedBy { it.name }
             .map { file ->
-                ByteStreams
+                file.name to ByteStreams
                     .toByteArray(file.inputStream())
                     .toString(Charsets.UTF_8)
                     .let { SqlQueryString(file.toPath(), it) }
             }
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
-            sqlQueries.forEach {
-                statement.execute(it.sql)
+            sqlQueries.forEach { (filename, query) ->
+                logger.info { "Insert $filename" }
+                statement.execute(query.sql)
             }
         }
     }

@@ -9,10 +9,14 @@ import org.jooq.codegen.GenerationTool
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object JooqGeneration {
 
     private val logger = KotlinLogging.logger {}
+
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
     val noHash = "NOHASH"
 
@@ -65,7 +69,13 @@ object JooqGeneration {
             )
             val diff = commandResult.lines.fold("") { acc, s -> acc + "\n" + s }
             val file = destinationPath.resolve(
-                "diff-" + shortenHash(hashRunDatabase) + "-" + shortenHash(hashGenerateDatabase) + ".sql"
+                "diff-"
+                        + formatter.format(LocalDateTime.now())
+                        + "-"
+                        + shortenHash(hashRunDatabase)
+                        + "-"
+                        + shortenHash(hashGenerateDatabase)
+                        + ".sql"
             )
             logger.info { "Writing diff to $file" }
             file.toFile().parentFile.mkdirs()

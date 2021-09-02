@@ -8,15 +8,30 @@ import mu.KotlinLogging
 import org.jooq.codegen.GenerationTool
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.SignStyle
+import java.time.temporal.ChronoField
+import java.time.temporal.ChronoField.*
 
 object JooqGeneration {
 
     private val logger = KotlinLogging.logger {}
 
-    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val formatter by lazy {
+        DateTimeFormatterBuilder()
+            .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+            .appendLiteral('-')
+            .appendValue(ChronoField.MONTH_OF_YEAR, 2)
+            .appendLiteral('-')
+            .appendValue(DAY_OF_MONTH, 2)
+            .appendLiteral('_')
+            .appendValue(HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(MINUTE_OF_HOUR, 2)
+            .optionalStart()
+            .toFormatter()
+    }
 
     val noHash = "NOHASH"
 

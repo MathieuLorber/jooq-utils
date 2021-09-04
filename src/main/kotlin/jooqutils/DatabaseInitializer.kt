@@ -62,9 +62,7 @@ object DatabaseInitializer {
             DatabaseConfiguration.Driver.psql -> ShellRunner.run("${conf.executablesPath}/createdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
                 .createStatement()
-                .use { statement ->
-                    statement.execute("create database if not exists `${conf.databaseName}`")
-                }
+                .use { statement -> statement.execute("create database if not exists `${conf.databaseName}`") }
         }.let { Unit /* force exhaustive when() */ }
 
     fun dropDb(conf: DatabaseConfiguration): Unit =
@@ -74,7 +72,7 @@ object DatabaseInitializer {
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
                 .createStatement()
                 .use { statement ->
-                    statement.execute("drop database if exists `${conf.databaseName}`;")
+                    statement.execute("drop database if exists `${conf.databaseName}`")
                 }
         }.let { Unit /* force exhaustive when() */ }
 
@@ -89,6 +87,9 @@ object DatabaseInitializer {
         val dependenciesSet = DependenciesParser.getDependenciesSet(sqlQueries, conf)
         val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
+            conf.schemas.forEach { schema ->
+                statement.execute("create schema if not exists $schema")
+            }
             execute(conf.driver, dependenciesSet, emptySet(), statement, sb)
         }
         if (sqlResultFile != null) {
@@ -117,8 +118,7 @@ object DatabaseInitializer {
         statement: Statement,
         sb: StringBuilder?
     ) {
-        val createTables = dependenciesList
-            .filter { (it.references.tables - alreadyCreated).isEmpty() }
+        val createTables = dependenciesList.filter { (it.references.tables - alreadyCreated).isEmpty() }
         logger.debug { "Create tables from files ${createTables.map { it.query.filePath }.filterNotNull()}" }
         logger.debug { "Create tables ${createTables.flatMap { it.tables.map { it.name } }}" }
         createTables.forEach {
@@ -134,11 +134,12 @@ object DatabaseInitializer {
                             statement.execute(it)
                         }
                 }
-            }.let { Unit }
+            }
 
         }
         val remainingTables = dependenciesList - createTables
         val created = createTables.flatMap { it.tables }
+        logger.debug { "Remaining tables ${remainingTables.flatMap { it.tables.map { it.name } }}" }
         if (remainingTables.isNotEmpty()) {
             execute(driver, remainingTables, alreadyCreated + created, statement, sb)
         }

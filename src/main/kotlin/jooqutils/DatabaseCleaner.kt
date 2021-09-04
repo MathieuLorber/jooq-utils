@@ -63,7 +63,7 @@ object DatabaseCleaner {
                 sb?.appendLine()
             }
             classified.constraints.forEach { c ->
-                val sql = "alter table ${c.table.name} drop constraint ${c.constraintName}"
+                val sql = "alter table ${c.table.schema}.${c.table.name} drop constraint ${c.constraintName}"
                 logger.debug { "Execute \"$sql\"" }
                 statement.execute(sql)
                 sb?.appendLine(sql + ";")
@@ -104,8 +104,8 @@ object DatabaseCleaner {
             .map { it.key }
             .toSet()
         dropTables.forEach {
-            logger.debug { "Drop table ${it.name} (if exists)" }
-            val sql = "drop table if exists ${it.name}"
+            logger.debug { "Drop table ${it.schema}.${it.name} (if exists)" }
+            val sql = "drop table if exists ${it.schema}.${it.name}"
             statement.execute(sql)
             sb?.appendLine(sql + ";")
             sb?.appendLine()

@@ -2,6 +2,7 @@ package jooqutils.jooq
 
 import jooqutils.DatabaseConfiguration
 import org.jooq.codegen.GeneratorStrategy
+import org.jooq.conf.MappedSchema
 import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Target
 import org.jooq.meta.mysql.MySQLDatabase
@@ -18,7 +19,7 @@ object JooqConfiguration {
     fun generateConfiguration(
         conf: DatabaseConfiguration,
         excludeTables: Set<String>,
-        generatorClass: KClass<out org.jooq.codegen.Generator>? = null,
+        //generatorClass: KClass<out org.jooq.codegen.Generator>? = null,
         generatedPackageName: String? = null,
         generatedCodePath: String? = null,
         generatorStrategyClass: KClass<out GeneratorStrategy>? = null

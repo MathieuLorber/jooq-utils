@@ -8,6 +8,7 @@ import jooqutils.util.DatasourcePool
 import mu.KotlinLogging
 import org.jooq.SQLDialect
 import org.jooq.Table
+import kotlin.io.path.name
 
 object DependenciesParser {
 
@@ -24,6 +25,7 @@ object DependenciesParser {
         val references: References
     )
 
+    // FIXME should be in jooqutils package (for logs)
     fun getDependenciesSet(sqlQueries: List<SqlQueryString>, conf: DatabaseConfiguration): Set<QueryDependencies> {
         val jooqDsl = DSL.using(DatasourcePool.get(conf), jooqDialect(conf.driver))
         val dependenciesSet: Set<QueryDependencies> = sqlQueries
@@ -92,6 +94,11 @@ object DependenciesParser {
             }
         }
 
+        logger.debug { "Dependencies :" }
+        dependenciesSet.forEach {
+            logger.debug { "* Tables ${it.tables.map { it.name }} : ${it.references.tables.map { it.name }}" }
+        }
+        logger.debug { "Dependencies :" }
         return dependenciesSet
     }
 

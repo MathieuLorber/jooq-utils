@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.nio.file.Path
 
 object ShellRunner {
 
@@ -17,8 +18,15 @@ object ShellRunner {
         }
     }
 
-    fun run(command: String, vararg params: String): CommandResult {
+    fun run(command: String, vararg params: String): CommandResult = doRun(null, command, *params)
+
+    fun run(directory: Path, command: String, vararg params: String): CommandResult = doRun(directory, command, *params)
+
+    private fun doRun(directory: Path?, command: String, vararg params: String): CommandResult {
         val builder = ProcessBuilder()
+        if (directory != null) {
+            builder.directory(directory.toFile())
+        }
         val fullCommand = command + params.fold("") { acc, s -> "$acc $s" }
         builder.command("sh", "-c", fullCommand)
         val process = builder.start()

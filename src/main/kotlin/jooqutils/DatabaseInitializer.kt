@@ -17,6 +17,7 @@ object DatabaseInitializer {
     private val logger = KotlinLogging.logger {}
 
     // TODO should be useless - jooq does it
+    // TODO schema only
     fun dump(conf: DatabaseConfiguration): ShellRunner.CommandResult {
         val dump = when (conf.driver) {
             DatabaseConfiguration.Driver.psql ->

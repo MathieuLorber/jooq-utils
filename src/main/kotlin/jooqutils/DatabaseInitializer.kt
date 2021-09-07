@@ -141,6 +141,13 @@ object DatabaseInitializer {
         val remainingTables = dependenciesList - createTables
         val created = createTables.flatMap { it.tables }
         logger.debug { "Remaining tables ${remainingTables.flatMap { it.tables.map { it.name } }}" }
+        if (createTables.isEmpty() && remainingTables.isNotEmpty()) {
+            logger.error { "Dependencies impossible to resolve" }
+            remainingTables.forEach {
+                logger.info { "${it.tables.map { it.name }} depends on ${it.references.tables.map { it.name }}" }
+            }
+            System.exit(1)
+        }
         if (remainingTables.isNotEmpty()) {
             execute(driver, remainingTables, alreadyCreated + created, statement, sb)
         }

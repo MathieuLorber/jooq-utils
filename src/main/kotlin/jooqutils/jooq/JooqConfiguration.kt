@@ -16,6 +16,9 @@ import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.SchemaMappingType
 import org.jooq.meta.jaxb.Strategy
+import org.jooq.codegen.KotlinGenerator
+import org.jooq.conf.MappedSchema
+import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Target
 import org.jooq.meta.mysql.MySQLDatabase
 import org.jooq.meta.postgres.PostgresDatabase
@@ -55,6 +58,7 @@ object JooqConfiguration {
             )
             .withGenerator(
                 Generator()
+                    .withName(KotlinGenerator::class.java.name)
                     .withDatabase(
                         Database()
                             .withName(

@@ -97,6 +97,8 @@ object JooqGeneration {
             logger.info { "Writing diff to $file" }
             file.toFile().parentFile.mkdirs()
             Files.write(file, diff.toByteArray(Charsets.UTF_8))
+        } else {
+            logger.info { "No diff between databases" }
         }
     }
 

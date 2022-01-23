@@ -132,7 +132,7 @@ object DatabaseInitializer {
                         .map { it.trim() }
                         .filter { it != "" }
                         .forEach {
-                            statement.execute(it)
+                            StatementExecutor.execute(statement, it)
                         }
                 }
             }

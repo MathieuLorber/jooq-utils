@@ -64,7 +64,7 @@ object DatabaseInitializer {
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
                 .createStatement()
                 .use { statement -> statement.execute("create database if not exists `${conf.databaseName}`") }
-        }.let { Unit /* force exhaustive when() */ }
+        }
 
     fun dropDb(conf: DatabaseConfiguration): Unit =
         when (conf.driver) {
@@ -75,7 +75,7 @@ object DatabaseInitializer {
                 .use { statement ->
                     statement.execute("drop database if exists `${conf.databaseName}`")
                 }
-        }.let { Unit /* force exhaustive when() */ }
+        }
 
     fun initializeSchema(conf: DatabaseConfiguration, sqlFilesPath: Path, sqlResultFile: Path?) {
         val sqlQueries = listSqlFiles(sqlFilesPath.toFile())
@@ -136,7 +136,6 @@ object DatabaseInitializer {
                         }
                 }
             }
-
         }
         val remainingTables = dependenciesList - createTables
         val created = createTables.flatMap { it.tables }

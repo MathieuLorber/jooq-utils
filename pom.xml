@@ -11,7 +11,7 @@
     <name>jooq-utils</name>
 
     <properties>
-        <kotlin.version>1.5.20</kotlin.version>
+        <kotlin.version>1.6.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <jooq.version>3.14.9</jooq.version>
     </properties>

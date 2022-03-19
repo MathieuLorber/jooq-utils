@@ -38,7 +38,7 @@ object DatasourcePool {
                 invokeMethod(clazz, datasource, "setServerName", configuration.host)
                 invokeMethod(clazz, datasource, "setPortNumber", configuration.port)
             }
-        }.let { Unit /* force exhaustive when() */ }
+        }
         invokeMethod(clazz, datasource, "setDatabaseName", configuration.databaseName)
         invokeMethod(clazz, datasource, "setUser", configuration.user)
         invokeMethod(clazz, datasource, "setPassword", configuration.password ?: "")

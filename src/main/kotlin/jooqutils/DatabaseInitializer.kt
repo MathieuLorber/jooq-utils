@@ -66,16 +66,17 @@ object DatabaseInitializer {
                 .use { statement -> statement.execute("create database if not exists `${conf.databaseName}`") }
         }
 
-    fun dropDb(conf: DatabaseConfiguration): Unit =
+    fun dropDb(conf: DatabaseConfiguration) {
         when (conf.driver) {
             // FIXME conf for dropdb path
             DatabaseConfiguration.Driver.psql -> ShellRunner.run("${conf.executablesPath}/dropdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql -> DatasourcePool.get(conf.copy(databaseName = "")).connection
-                .createStatement()
-                .use { statement ->
-                    statement.execute("drop database if exists `${conf.databaseName}`")
-                }
+                    .createStatement()
+                    .use { statement ->
+                        statement.execute("drop database if exists `${conf.databaseName}`")
+                    }
         }
+    }
 
     fun initializeSchema(conf: DatabaseConfiguration, sqlFilesPath: Path, sqlResultFile: Path?) {
         val sqlQueries = listSqlFiles(sqlFilesPath.toFile())

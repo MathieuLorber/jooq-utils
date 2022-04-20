@@ -10,7 +10,8 @@ class JooqGeneratorStrategy(val namePrefix: String = "") : DefaultGeneratorStrat
 
     override fun getJavaClassName(definition: Definition, mode: GeneratorStrategy.Mode?) =
         when (mode) {
-            GeneratorStrategy.Mode.DEFAULT -> namePrefix + super.getJavaClassName(definition, mode) + "Table"
+            GeneratorStrategy.Mode.DEFAULT ->
+                namePrefix + super.getJavaClassName(definition, mode) + "Table"
             GeneratorStrategy.Mode.RECORD -> namePrefix + super.getJavaClassName(definition, mode)
             GeneratorStrategy.Mode.POJO,
             GeneratorStrategy.Mode.INTERFACE,
@@ -22,9 +23,9 @@ class JooqGeneratorStrategy(val namePrefix: String = "") : DefaultGeneratorStrat
 
     override fun getJavaIdentifier(definition: Definition?) =
         if (definition is PostgresTableDefinition || definition is MySQLTableDefinition) {
-            namePrefix.let { if (it != "") it.toUpperCase() + "_" else it } + super.getJavaIdentifier(definition)
+            namePrefix.let { if (it != "") it.toUpperCase() + "_" else it } +
+                super.getJavaIdentifier(definition)
         } else {
             super.getJavaIdentifier(definition)
         }
-
 }

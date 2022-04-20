@@ -1,13 +1,9 @@
 package jooqutils
 
-import org.jooq.Table
 import java.nio.file.Path
-import java.nio.file.Paths
+import org.jooq.Table
 
-data class SqlQueryString(
-    val filePath: Path?,
-    val sql: String
-)
+data class SqlQueryString(val filePath: Path?, val sql: String)
 
 data class TableReferences(val table: Table<*>, val references: References)
 
@@ -27,12 +23,15 @@ data class DatabaseConfiguration(
     val pgQuarrel: String?
 ) {
     enum class Driver {
-        psql, mysql
+        psql,
+        mysql
     }
 
     init {
         if (driver == Driver.mysql) {
-            require(schemas.isEmpty()) { "Mysql schemas list must be empty (database name == schema in Mysql" }
+            require(schemas.isEmpty()) {
+                "Mysql schemas list must be empty (database name == schema in Mysql"
+            }
         }
         if (driver == Driver.psql) {
             require(executablesPath != null) { "Psql requires non null executablesPath" }

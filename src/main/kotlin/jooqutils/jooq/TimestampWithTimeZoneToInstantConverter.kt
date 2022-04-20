@@ -1,9 +1,9 @@
 package jooqutils.jooq
 
-import org.jooq.Converter
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import org.jooq.Converter
 
 class TimestampWithTimeZoneToInstantConverter : Converter<OffsetDateTime, Instant> {
     override fun from(d: OffsetDateTime?) = d?.toInstant()

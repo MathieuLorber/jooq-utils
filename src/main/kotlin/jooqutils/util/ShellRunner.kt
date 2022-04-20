@@ -1,10 +1,10 @@
 package jooqutils.util
 
-import mu.KotlinLogging
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.file.Path
+import mu.KotlinLogging
 
 object ShellRunner {
 
@@ -12,7 +12,8 @@ object ShellRunner {
 
     data class CommandResult(val result: Int, val lines: List<String>)
 
-    internal class StreamConsumer(val inputStream: InputStream, val lines: MutableList<String>) : Runnable {
+    internal class StreamConsumer(val inputStream: InputStream, val lines: MutableList<String>) :
+        Runnable {
         override fun run() {
             BufferedReader(InputStreamReader(inputStream)).lines().forEach { lines.add(it) }
         }
@@ -20,7 +21,8 @@ object ShellRunner {
 
     fun run(command: String, vararg params: String): CommandResult = doRun(null, command, *params)
 
-    fun run(directory: Path, command: String, vararg params: String): CommandResult = doRun(directory, command, *params)
+    fun run(directory: Path, command: String, vararg params: String): CommandResult =
+        doRun(directory, command, *params)
 
     private fun doRun(directory: Path?, command: String, vararg params: String): CommandResult {
         val builder = ProcessBuilder()
@@ -30,7 +32,7 @@ object ShellRunner {
         val fullCommand = command + params.fold("") { acc, s -> "$acc $s" }
         builder.command("sh", "-c", fullCommand)
         val process = builder.start()
-        val reader = BufferedReader(InputStreamReader(process.inputStream));
+        val reader = BufferedReader(InputStreamReader(process.inputStream))
         val lines = mutableListOf<String>()
         do {
             val line = reader.readLine()

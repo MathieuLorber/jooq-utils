@@ -1,7 +1,7 @@
 package jooqutils.util
 
-import mu.KotlinLogging
 import java.sql.Statement
+import mu.KotlinLogging
 
 object StatementExecutor {
 
@@ -15,5 +15,4 @@ object StatementExecutor {
             throw e
         }
     }
-
 }

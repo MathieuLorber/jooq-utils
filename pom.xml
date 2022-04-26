@@ -16,6 +16,15 @@
         <jooq.version>3.14.9</jooq.version>
     </properties>
 
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub mlo Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/MathieuLorber/jooq-utils</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

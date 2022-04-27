@@ -41,7 +41,7 @@ object JooqGeneration {
         conf: DatabaseConfiguration,
         excludeTables: Set<String> = emptySet(),
         generatedPackageName: String,
-        generatedCodePath: String
+        generatedCodePath: Path
     ) {
         GenerationTool.generate(
             JooqConfiguration.generateConfiguration(

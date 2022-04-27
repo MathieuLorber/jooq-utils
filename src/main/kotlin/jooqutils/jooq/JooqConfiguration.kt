@@ -1,13 +1,21 @@
 package jooqutils.jooq
 
+import java.nio.file.Path
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 import javax.annotation.Nonnull
 import javax.annotation.Nullable
 import jooqutils.DatabaseConfiguration
 import kotlin.reflect.KClass
 import org.jooq.codegen.GeneratorStrategy
-import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generate
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.SchemaMappingType
+import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 import org.jooq.meta.mysql.MySQLDatabase
 import org.jooq.meta.postgres.PostgresDatabase
@@ -20,7 +28,7 @@ object JooqConfiguration {
         excludeTables: Set<String>,
         // generatorClass: KClass<out org.jooq.codegen.Generator>? = null,
         generatedPackageName: String? = null,
-        generatedCodePath: String? = null,
+        generatedCodePath: Path? = null,
         generatorStrategyClass: KClass<out GeneratorStrategy>? = null
     ) =
         Configuration()
@@ -128,7 +136,7 @@ object JooqConfiguration {
                             withTarget(
                                 Target()
                                     .withPackageName("$generatedPackageName.generated")
-                                    .withDirectory(generatedCodePath))
+                                    .withDirectory(generatedCodePath.toFile().absolutePath))
                         }
                     }
                     .withGenerate(

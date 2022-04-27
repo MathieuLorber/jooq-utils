@@ -12,7 +12,8 @@ class GenerateJooqTest {
     @Ignore
     @Test
     fun `test generate Orgarif Jooq files`() {
-        val sqlFilesPath = Paths.get("${System.getProperty("user.dir")}/src/test/resources/orgarif")
+        val userDir = Paths.get(System.getProperty("user.dir"))
+        val sqlFilesPath = userDir.resolve("/src/test/resources/orgarif")
         val conf =
             DatabaseConfiguration(
                 DatabaseConfiguration.Driver.mysql,
@@ -23,16 +24,16 @@ class GenerateJooqTest {
                 "",
                 emptySet(),
                 "/usr/local/bin",
-                "/Users/mlo/git/pgquarrel/pgquarrel")
+                null)
         try {
             DatabaseInitializer.dropDb(conf)
             DatabaseInitializer.createDb(conf)
             DatabaseInitializer.initializeSchema(conf, sqlFilesPath, null)
             JooqGeneration.generateJooq(
-                conf,
-                setOf("SPRING_SESSION", "SPRING_SESSION_ATTRIBUTES"),
-                "lite.jooq",
-                "target/generated-for-test")
+                conf = conf,
+                excludeTables = setOf("SPRING_SESSION", "SPRING_SESSION_ATTRIBUTES"),
+                generatedPackageName = "lite.jooq",
+                generatedCodePath = userDir.resolve("target/generated-for-test"))
         } finally {
             DatabaseInitializer.dropDb(conf)
         }

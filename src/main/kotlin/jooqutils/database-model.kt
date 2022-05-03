@@ -18,6 +18,7 @@ data class DatabaseConfiguration(
     val databaseName: String,
     val user: String,
     val password: String?,
+    // TODO public is default for psql is emptySet() is provided here ?
     val schemas: Set<String>,
     val executablesPath: String?,
     val pgQuarrel: String?

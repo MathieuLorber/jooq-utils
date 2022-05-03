@@ -19,6 +19,7 @@ object DatabaseInitializer {
     // TODO should be useless - jooq does it
     // TODO schema only
     fun dump(conf: DatabaseConfiguration): ShellRunner.CommandResult {
+        logger.debug { "Dump starts" }
         val dump =
             when (conf.driver) {
                 DatabaseConfiguration.Driver.psql ->
@@ -38,6 +39,9 @@ object DatabaseInitializer {
                         conf.user,
                         "-d",
                         conf.databaseName,
+                        "-n",
+                        // FIXME is space separator ok ??
+                        conf.schemas.joinToString(separator = " "),
                         "--schema-only")
                 DatabaseConfiguration.Driver.mysql ->
                     ShellRunner.run(
@@ -48,7 +52,7 @@ object DatabaseInitializer {
                         "--password=" + conf.password,
                         conf.databaseName)
             }
-        logger.debug { "Dump" }
+        logger.debug { "Dump ok" }
         if (logger.isDebugEnabled) {
             dump.lines.forEach { logger.debug { it } }
         }

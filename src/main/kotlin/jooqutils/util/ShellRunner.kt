@@ -30,6 +30,7 @@ object ShellRunner {
             builder.directory(directory.toFile())
         }
         val fullCommand = command + params.fold("") { acc, s -> "$acc $s" }
+        logger.debug { "Run '$fullCommand'" }
         builder.command("sh", "-c", fullCommand)
         val process = builder.start()
         val reader = BufferedReader(InputStreamReader(process.inputStream))
@@ -39,7 +40,7 @@ object ShellRunner {
             if (line != null) lines.add(line)
         } while (line != null)
         val result = process.waitFor()
-        logger.debug { "Run '$fullCommand' => $result" }
+        logger.debug { "Command result : $result" }
         return CommandResult(result, lines)
     }
 }

@@ -22,7 +22,7 @@ class ResetDatabaseTest {
                 "dbtooling-orgarif-test",
                 "root",
                 "",
-                emptySet(),
+                setOf("public"),
                 "/usr/local/bin",
                 null)
         DatabaseInitializer.createDb(conf)
@@ -42,7 +42,7 @@ class ResetDatabaseTest {
                 "dbtooling-orgarif-test",
                 "mlo",
                 "",
-                emptySet(),
+                setOf("public"),
                 "/usr/local/bin",
                 null)
         DatabaseInitializer.createDb(conf)

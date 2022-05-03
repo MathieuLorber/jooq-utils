@@ -28,7 +28,6 @@ object DatabaseInitializer {
                     // uyugupggbagqpqk0afsb
                     ShellRunner.run(
                         "PGPASSWORD=${conf.password}",
-                        "&&",
                         // FIXME conf path pg_dump
                         "${conf.executablesPath}/pg_dump",
                         "-h",

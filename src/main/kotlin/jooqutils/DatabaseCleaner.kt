@@ -37,6 +37,7 @@ object DatabaseCleaner {
                             it
                                 .filter { !it.startsWith("SET statement_timeout") }
                                 .filter { !it.startsWith("SELECT pg_catalog.set_config") }
+                                .filter { !it.startsWith("CREATE SEQUENCE") }
                                 .filter { !it.startsWith("ALTER SEQUENCE") }
                                 // TODO or no reference !!
                                 .filter { !it.startsWith("CREATE UNIQUE INDEX") }

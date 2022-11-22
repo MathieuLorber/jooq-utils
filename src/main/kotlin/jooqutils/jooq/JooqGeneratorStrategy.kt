@@ -23,7 +23,7 @@ class JooqGeneratorStrategy(val namePrefix: String = "") : DefaultGeneratorStrat
 
     override fun getJavaIdentifier(definition: Definition?) =
         if (definition is PostgresTableDefinition || definition is MySQLTableDefinition) {
-            namePrefix.let { if (it != "") it.toUpperCase() + "_" else it } +
+            namePrefix.let { if (it != "") it.uppercase() + "_" else it } +
                 super.getJavaIdentifier(definition)
         } else {
             super.getJavaIdentifier(definition)

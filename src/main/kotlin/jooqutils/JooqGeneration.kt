@@ -20,9 +20,9 @@ object JooqGeneration {
 
     val formatter by lazy {
         DateTimeFormatterBuilder()
-            .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+            .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
             .appendLiteral('-')
-            .appendValue(ChronoField.MONTH_OF_YEAR, 2)
+            .appendValue(MONTH_OF_YEAR, 2)
             .appendLiteral('-')
             .appendValue(DAY_OF_MONTH, 2)
             .appendLiteral('T')

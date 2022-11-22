@@ -70,13 +70,13 @@ object JooqConfiguration {
                                                 conf.schemas.map {
                                                     SchemaMappingType().withInputSchema(it)
                                                 })
-                                        } else {}
+                                        }
                                     }
                                     DatabaseConfiguration.Driver.mysql -> {
                                         withSchemata(
                                             SchemaMappingType().withInputSchema(conf.databaseName))
                                     }
-                                }.let { Unit }
+                                }
                             }
                             .apply {
                                 val timeStampForcedType =

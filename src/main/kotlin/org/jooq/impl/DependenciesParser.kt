@@ -17,6 +17,7 @@ object DependenciesParser {
         when (driver) {
             DatabaseConfiguration.Driver.psql -> SQLDialect.POSTGRES
             DatabaseConfiguration.Driver.mysql -> SQLDialect.MYSQL
+            DatabaseConfiguration.Driver.sqlite -> SQLDialect.SQLITE
         }
 
     data class QueryDependencies(

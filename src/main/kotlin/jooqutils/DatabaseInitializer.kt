@@ -54,6 +54,13 @@ object DatabaseInitializer {
                         "--password=" + conf.password,
                         conf.databaseName
                     )
+
+                DatabaseConfiguration.Driver.sqlite ->
+                    ShellRunner.run(
+                        "sqlite3",
+                        conf.databaseName,
+                        ".dump"
+                    )
             }
         logger.debug { "Dump ok" }
         if (logger.isDebugEnabled) {
@@ -69,9 +76,15 @@ object DatabaseInitializer {
                 ShellRunner.run("createdb", conf.databaseName)
 
             DatabaseConfiguration.Driver.mysql ->
-                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use { statement ->
-                    statement.execute("create database if not exists `${conf.databaseName}`")
+                DatasourcePool.get(conf.copy(databaseName = "")).connection.use {
+                    it.createStatement().use { statement ->
+                        statement.execute("create database if not exists `${conf.databaseName}`")
+                    }
                 }
+
+            DatabaseConfiguration.Driver.sqlite -> {
+                // nothing to do, a datasource connection creates the file
+            }
         }
 
     fun dropDb(conf: DatabaseConfiguration) {
@@ -81,9 +94,14 @@ object DatabaseInitializer {
                 ShellRunner.run("dropdb", conf.databaseName)
 
             DatabaseConfiguration.Driver.mysql ->
-                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use { statement ->
-                    statement.execute("drop database if exists `${conf.databaseName}`")
+                DatasourcePool.get(conf.copy(databaseName = "")).connection.use {
+                    it.createStatement().use { statement ->
+                        statement.execute("drop database if exists `${conf.databaseName}`")
+                    }
                 }
+
+            DatabaseConfiguration.Driver.sqlite ->
+                ShellRunner.run("trash", conf.databaseName)
         }
     }
 
@@ -96,11 +114,22 @@ object DatabaseInitializer {
             }
         val dependenciesSet = DependenciesParser.getDependenciesSet(sqlQueries, conf)
         val sb = if (sqlResultFile != null) StringBuilder() else null
-        DatasourcePool.get(conf).connection.createStatement().use { statement ->
-            conf.schemas.forEach { schema ->
-                statement.execute("create schema if not exists $schema")
+        DatasourcePool.get(conf).connection.use {
+            it.createStatement().use { statement ->
+                when (conf.driver) {
+                    DatabaseConfiguration.Driver.psql -> {
+                        conf.schemas.forEach { schema ->
+                            logger.debug { "create schema if not exists \"$schema\"" }
+                            statement.execute("create schema if not exists \"$schema\"")
+                        }
+                    }
+
+                    DatabaseConfiguration.Driver.mysql,
+                    DatabaseConfiguration.Driver.sqlite -> {
+                    }
+                }
+                execute(conf.driver, dependenciesSet, emptySet(), statement, sb)
             }
-            execute(conf.driver, dependenciesSet, emptySet(), statement, sb)
         }
         if (sqlResultFile != null) {
             sqlResultFile.toFile().parentFile.mkdirs()
@@ -134,6 +163,13 @@ object DatabaseInitializer {
             "Create tables from files ${createTables.map { it.query.filePath }.filterNotNull()}"
         }
         logger.debug { "Create tables ${createTables.flatMap { it.tables.map { it.name } }}" }
+//        when (driver) {
+//            DatabaseConfiguration.Driver.mysql,
+//            DatabaseConfiguration.Driver.psql -> {
+//            }
+//
+//            DatabaseConfiguration.Driver.sqlite -> statement.execute("BEGIN TRANSACTION;")
+//        }
         createTables.forEach {
             sb?.appendLine(it.query.sql)
             sb?.appendLine()
@@ -141,11 +177,11 @@ object DatabaseInitializer {
                 DatabaseConfiguration.Driver.psql ->
                     StatementExecutor.execute(statement, it.query.sql)
 
-                DatabaseConfiguration.Driver.mysql -> {
+                DatabaseConfiguration.Driver.mysql,
+                DatabaseConfiguration.Driver.sqlite ->
                     it.query.sql.split(";").map { it.trim() }.filter { it != "" }.forEach {
                         StatementExecutor.execute(statement, it)
                     }
-                }
             }
         }
         val remainingTables = dependenciesList - createTables
@@ -163,6 +199,14 @@ object DatabaseInitializer {
         if (remainingTables.isNotEmpty()) {
             execute(driver, remainingTables, alreadyCreated + created, statement, sb)
         }
+//        when (driver) {
+//            DatabaseConfiguration.Driver.mysql,
+//            DatabaseConfiguration.Driver.psql -> {
+//            }
+//
+//            DatabaseConfiguration.Driver.sqlite ->
+//                statement.execute("COMMIT;")
+//        }
     }
 
     fun insert(conf: DatabaseConfiguration, sqlFilesPath: Path) {
@@ -177,10 +221,12 @@ object DatabaseInitializer {
                             SqlQueryString(file.toPath(), it)
                         }
             }
-        DatasourcePool.get(conf).connection.createStatement().use { statement ->
-            sqlQueries.forEach { (filename, query) ->
-                logger.info { "Insert $filename" }
-                statement.execute(query.sql)
+        DatasourcePool.get(conf).connection.use {
+            it.createStatement().use { statement ->
+                sqlQueries.forEach { (filename, query) ->
+                    logger.info { "Insert $filename" }
+                    statement.execute(query.sql)
+                }
             }
         }
     }

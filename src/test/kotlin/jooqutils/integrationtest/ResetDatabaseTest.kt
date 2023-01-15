@@ -18,7 +18,7 @@ class ResetDatabaseTest {
             DatabaseConfiguration(
                 DatabaseConfiguration.Driver.mysql,
                 "localhost",
-                5432,
+                "5432",
                 "dbtooling-orgarif-test",
                 "root",
                 "",
@@ -38,7 +38,7 @@ class ResetDatabaseTest {
             DatabaseConfiguration(
                 DatabaseConfiguration.Driver.psql,
                 "localhost",
-                5432,
+                "5432",
                 "dbtooling-orgarif-test",
                 "mlo",
                 "",

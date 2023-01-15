@@ -5,7 +5,6 @@ import jooqutils.DatabaseConfiguration
 import jooqutils.References
 import jooqutils.SqlQueryString
 import jooqutils.util.DatasourcePool
-import kotlin.io.path.name
 import mu.KotlinLogging
 import org.jooq.SQLDialect
 import org.jooq.Table
@@ -58,6 +57,7 @@ object DependenciesParser {
                                                 when (constraint) {
                                                     is ConstraintImpl ->
                                                         constraint.`$referencesTable`()
+
                                                     else -> {
                                                         // TODO do something smarter
                                                         logger.debug { constraint }
@@ -66,11 +66,13 @@ object DependenciesParser {
                                                 }
                                             }
                                             .filterNotNull()
+
                                     is AlterTableImpl ->
                                         query.`$addConstraint`().let {
                                             when (it) {
                                                 is ConstraintImpl ->
                                                     listOf(it.`$referencesTable`()).filterNotNull()
+
                                                 else -> {
                                                     // TODO do something smarter
                                                     logger.debug { it }
@@ -78,9 +80,10 @@ object DependenciesParser {
                                                 }
                                             }
                                         }
+
                                     is CreateSequenceImpl,
-                                    // TODO permit constraints too !
-                                    // see dump
+                                        // TODO permit constraints too !
+                                        // see dump
                                     is CreateIndexImpl -> emptyList()
                                     // is Delete/Insert/Update
                                     is AbstractDelegatingRowCountQuery<*> -> emptyList()
@@ -125,13 +128,15 @@ object DependenciesParser {
         if (references == null) {
             val badTable = (tableChain.dropLast(1).lastOrNull() ?: startTable)
             throw IllegalStateException(
-                "Table $badTable references $checkTable which doesn't exist.")
+                "Table $badTable references $checkTable which doesn't exist."
+            )
         }
         references.tables.forEach { table ->
             if (table == startTable) {
                 val chain = tableChain.map { it.name }.joinToString(" -> ")
                 throw IllegalStateException(
-                    "Cyclic reference ${startTable.name} -> $chain -> ${table.name}")
+                    "Cyclic reference ${startTable.name} -> $chain -> ${table.name}"
+                )
             }
             // TODO is useless actually - check
             // checkReferences(startTable, map, tableChain + table)

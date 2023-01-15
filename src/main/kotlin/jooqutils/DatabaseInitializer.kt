@@ -42,7 +42,9 @@ object DatabaseInitializer {
                         "-n",
                         // FIXME is space separator ok ??
                         conf.schemas.joinToString(separator = " "),
-                        "--schema-only")
+                        "--schema-only"
+                    )
+
                 DatabaseConfiguration.Driver.mysql ->
                     ShellRunner.run(
                         "mysqldump",
@@ -50,7 +52,8 @@ object DatabaseInitializer {
                         "--user",
                         conf.user,
                         "--password=" + conf.password,
-                        conf.databaseName)
+                        conf.databaseName
+                    )
             }
         logger.debug { "Dump ok" }
         if (logger.isDebugEnabled) {
@@ -64,9 +67,9 @@ object DatabaseInitializer {
             // FIXME conf for createdb path
             DatabaseConfiguration.Driver.psql ->
                 ShellRunner.run("createdb", conf.databaseName)
+
             DatabaseConfiguration.Driver.mysql ->
-                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use {
-                    statement ->
+                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use { statement ->
                     statement.execute("create database if not exists `${conf.databaseName}`")
                 }
         }
@@ -76,9 +79,9 @@ object DatabaseInitializer {
             // FIXME conf for dropdb path
             DatabaseConfiguration.Driver.psql ->
                 ShellRunner.run("dropdb", conf.databaseName)
+
             DatabaseConfiguration.Driver.mysql ->
-                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use {
-                    statement ->
+                DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use { statement ->
                     statement.execute("drop database if exists `${conf.databaseName}`")
                 }
         }
@@ -137,6 +140,7 @@ object DatabaseInitializer {
             when (driver) {
                 DatabaseConfiguration.Driver.psql ->
                     StatementExecutor.execute(statement, it.query.sql)
+
                 DatabaseConfiguration.Driver.mysql -> {
                     it.query.sql.split(";").map { it.trim() }.filter { it != "" }.forEach {
                         StatementExecutor.execute(statement, it)
@@ -169,9 +173,9 @@ object DatabaseInitializer {
         val sqlQueries =
             listSqlFiles(sqlFilesPath.toFile()).sortedBy { it.name }.map { file ->
                 file.name to
-                    ByteStreams.toByteArray(file.inputStream()).toString(Charsets.UTF_8).let {
-                        SqlQueryString(file.toPath(), it)
-                    }
+                        ByteStreams.toByteArray(file.inputStream()).toString(Charsets.UTF_8).let {
+                            SqlQueryString(file.toPath(), it)
+                        }
             }
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
             sqlQueries.forEach { (filename, query) ->

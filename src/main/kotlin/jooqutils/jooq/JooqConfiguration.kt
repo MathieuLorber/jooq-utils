@@ -39,16 +39,20 @@ object JooqConfiguration {
                             // TODO centralize org.postgresql.Driver & com.mysql.cj.jdbc.Driver
                             DatabaseConfiguration.Driver.psql -> "org.postgresql.Driver"
                             DatabaseConfiguration.Driver.mysql -> "com.mysql.cj.jdbc.Driver"
-                        })
+                        }
+                    )
                     .withUrl(
                         when (conf.driver) {
                             DatabaseConfiguration.Driver.psql ->
                                 "jdbc:postgresql://${conf.host}/${conf.databaseName}"
+
                             DatabaseConfiguration.Driver.mysql ->
                                 "jdbc:mysql://${conf.host}/${conf.databaseName}?serverTimezone=UTC"
-                        })
+                        }
+                    )
                     .withUser(conf.user)
-                    .withPassword(conf.password))
+                    .withPassword(conf.password)
+            )
             .withGenerator(
                 Generator()
                     .withDatabase(
@@ -57,9 +61,11 @@ object JooqConfiguration {
                                 when (conf.driver) {
                                     DatabaseConfiguration.Driver.psql ->
                                         PostgresDatabase::class.java.name
+
                                     DatabaseConfiguration.Driver.mysql ->
                                         MySQLDatabase::class.java.name
-                                })
+                                }
+                            )
                             .withIncludes(".*")
                             .withExcludes(excludeTables.joinToString(separator = "|"))
                             .apply {
@@ -72,9 +78,11 @@ object JooqConfiguration {
                                                 })
                                         }
                                     }
+
                                     DatabaseConfiguration.Driver.mysql -> {
                                         withSchemata(
-                                            SchemaMappingType().withInputSchema(conf.databaseName))
+                                            SchemaMappingType().withInputSchema(conf.databaseName)
+                                        )
                                     }
                                 }
                             }
@@ -99,8 +107,10 @@ object JooqConfiguration {
                                                 }
                                             listOf(
                                                 timeStampForcedType,
-                                                timestampWithTimeZoneForcedType)
+                                                timestampWithTimeZoneForcedType
+                                            )
                                         }
+
                                         DatabaseConfiguration.Driver.mysql -> {
                                             val booleanForcedType =
                                                 ForcedType().apply {
@@ -117,7 +127,8 @@ object JooqConfiguration {
                                             listOf(
                                                 timeStampForcedType,
                                                 booleanForcedType,
-                                                uuidForcedType)
+                                                uuidForcedType
+                                            )
                                         }
                                     }
                                 withForcedTypes(forcedTypes)
@@ -131,12 +142,14 @@ object JooqConfiguration {
                         if (generatedPackageName != null || generatedCodePath != null) {
                             if (generatedPackageName == null || generatedCodePath == null) {
                                 throw IllegalArgumentException(
-                                    "generatedPackageName and generatedCodePath must be both null or not null")
+                                    "generatedPackageName and generatedCodePath must be both null or not null"
+                                )
                             }
                             withTarget(
                                 Target()
                                     .withPackageName("$generatedPackageName.generated")
-                                    .withDirectory(generatedCodePath.toFile().absolutePath))
+                                    .withDirectory(generatedCodePath.toFile().absolutePath)
+                            )
                         }
                     }
                     .withGenerate(
@@ -145,5 +158,6 @@ object JooqConfiguration {
                             nullableAnnotationType = Nullable::class.java.name
                             isNonnullAnnotation = true
                             nonnullAnnotationType = Nonnull::class.java.name
-                        }))
+                        })
+            )
 }

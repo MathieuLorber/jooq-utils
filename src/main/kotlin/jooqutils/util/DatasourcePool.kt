@@ -21,6 +21,7 @@ object DatasourcePool {
                 DatabaseConfiguration.Driver.psql ->
                     // TODO centralize
                     "org.postgresql.ds.PGSimpleDataSource"
+
                 DatabaseConfiguration.Driver.mysql -> "com.mysql.cj.jdbc.MysqlDataSource"
             }
         val clazz = Class.forName(className) as Class<DataSource>
@@ -33,6 +34,7 @@ object DatasourcePool {
                 invokeMethod(clazz, datasource, "setServerNames", arrayOf(configuration.host))
                 invokeMethod(clazz, datasource, "setPortNumbers", intArrayOf(configuration.port))
             }
+
             DatabaseConfiguration.Driver.mysql -> {
                 invokeMethod(clazz, datasource, "setServerName", configuration.host)
                 invokeMethod(clazz, datasource, "setPortNumber", configuration.port)

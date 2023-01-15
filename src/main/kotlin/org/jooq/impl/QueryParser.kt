@@ -54,6 +54,7 @@ object QueryParser {
                                 null
                             }
                         }
+
                         else -> {
                             // TODO do something smarter
                             logger.debug { it }

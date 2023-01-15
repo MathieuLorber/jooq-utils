@@ -12,19 +12,21 @@ class JooqGeneratorStrategy(val namePrefix: String = "") : DefaultGeneratorStrat
         when (mode) {
             GeneratorStrategy.Mode.DEFAULT ->
                 namePrefix + super.getJavaClassName(definition, mode) + "Table"
+
             GeneratorStrategy.Mode.RECORD -> namePrefix + super.getJavaClassName(definition, mode)
             GeneratorStrategy.Mode.POJO,
             GeneratorStrategy.Mode.INTERFACE,
             GeneratorStrategy.Mode.DAO,
             GeneratorStrategy.Mode.ENUM,
             GeneratorStrategy.Mode.DOMAIN -> super.getJavaClassName(definition, mode)
+
             null -> throw RuntimeException()
         }
 
     override fun getJavaIdentifier(definition: Definition?) =
         if (definition is PostgresTableDefinition || definition is MySQLTableDefinition) {
             namePrefix.let { if (it != "") it.uppercase() + "_" else it } +
-                super.getJavaIdentifier(definition)
+                    super.getJavaIdentifier(definition)
         } else {
             super.getJavaIdentifier(definition)
         }

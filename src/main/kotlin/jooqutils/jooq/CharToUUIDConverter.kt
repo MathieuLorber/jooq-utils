@@ -1,6 +1,6 @@
 package jooqutils.jooq
 
-import java.util.*
+import java.util.UUID
 import org.jooq.Converter
 
 class CharToUUIDConverter : Converter<String, UUID> {
@@ -8,7 +8,8 @@ class CharToUUIDConverter : Converter<String, UUID> {
         t?.let {
             UUID.fromString(
                 "${it.substring(0, 8)}-${it.substring(8, 12)}-${it.substring(12, 16)}-" +
-                    "${it.substring(16, 20)}-${it.substring(20)}")
+                        "${it.substring(16, 20)}-${it.substring(20)}"
+            )
         }
 
     override fun to(u: UUID?): String? = u?.toString()?.replace("-", "")

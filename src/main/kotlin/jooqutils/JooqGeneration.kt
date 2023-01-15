@@ -6,8 +6,12 @@ import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
-import java.time.temporal.ChronoField
-import java.time.temporal.ChronoField.*
+import java.time.temporal.ChronoField.DAY_OF_MONTH
+import java.time.temporal.ChronoField.HOUR_OF_DAY
+import java.time.temporal.ChronoField.MINUTE_OF_HOUR
+import java.time.temporal.ChronoField.MONTH_OF_YEAR
+import java.time.temporal.ChronoField.SECOND_OF_MINUTE
+import java.time.temporal.ChronoField.YEAR
 import jooqutils.jooq.JooqConfiguration
 import jooqutils.jooq.JooqGeneratorStrategy
 import jooqutils.util.ShellRunner
@@ -49,7 +53,9 @@ object JooqGeneration {
                 excludeTables = excludeTables,
                 generatedPackageName = generatedPackageName,
                 generatedCodePath = generatedCodePath,
-                generatorStrategyClass = JooqGeneratorStrategy::class))
+                generatorStrategyClass = JooqGeneratorStrategy::class
+            )
+        )
     }
 
     fun generateDiff(
@@ -81,17 +87,19 @@ object JooqGeneration {
                     "--target-port=${conf.port}",
                     "--target-dbname=${conf.databaseName}",
                     "--target-user=${conf.user}",
-                    "--target-no-password")
+                    "--target-no-password"
+                )
             val diff = commandResult.lines.fold("") { acc, s -> acc + "\n" + s }
             val file =
                 destinationPath.resolve(
                     "diff_" +
-                        formatter.format(LocalDateTime.now()) +
-                        "_" +
-                        shortenHash(hashRunDatabase) +
-                        "-" +
-                        shortenHash(hashGenerateDatabase) +
-                        ".sql")
+                            formatter.format(LocalDateTime.now()) +
+                            "_" +
+                            shortenHash(hashRunDatabase) +
+                            "-" +
+                            shortenHash(hashGenerateDatabase) +
+                            ".sql"
+                )
             logger.info { "Writing diff to $file" }
             file.toFile().parentFile.mkdirs()
             Files.write(file, diff.toByteArray(Charsets.UTF_8))

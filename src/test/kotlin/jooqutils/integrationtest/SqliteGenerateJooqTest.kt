@@ -4,25 +4,26 @@ import java.nio.file.Paths
 import jooqutils.DatabaseConfiguration
 import jooqutils.DatabaseInitializer
 import jooqutils.JooqGeneration
-import org.junit.Ignore
 import org.junit.Test
 
-class GenerateJooqTest {
+class SqliteGenerateJooqTest {
 
-    @Ignore
     @Test
-    fun `test generate Orgarif Jooq files`() {
+    fun `test generate ktts-webapp-template Jooq files`() {
         val userDir = Paths.get(System.getProperty("user.dir"))
-        val sqlFilesPath = userDir.resolve("/src/test/resources/orgarif")
+        println(userDir.toAbsolutePath())
+        val sqlFilesPath = userDir.resolve("src/test/resources/ktts-webapp-template-sqlite/schema")
+        println(sqlFilesPath.toAbsolutePath())
         val conf =
             DatabaseConfiguration(
-                DatabaseConfiguration.Driver.mysql,
-                "localhost",
-                "5432",
-                "dbtooling-orgarif-test",
-                "root",
+                DatabaseConfiguration.Driver.sqlite,
                 "",
+                "",
+                "$userDir/target/test-sqlite.db",
+                "sa",
+                "sa",
                 emptySet(),
+                pgQuarrel = null
             )
         try {
             DatabaseInitializer.dropDb(conf)
@@ -32,7 +33,7 @@ class GenerateJooqTest {
                 conf = conf,
                 excludeTables = setOf("SPRING_SESSION", "SPRING_SESSION_ATTRIBUTES"),
                 generatedPackageName = "lite.jooq",
-                generatedCodePath = userDir.resolve("target/generated-for-test")
+                generatedCodePath = userDir.resolve("target/sqlite-generated-for-test")
             )
         } finally {
             DatabaseInitializer.dropDb(conf)

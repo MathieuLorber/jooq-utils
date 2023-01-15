@@ -19,6 +19,7 @@ import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 import org.jooq.meta.mysql.MySQLDatabase
 import org.jooq.meta.postgres.PostgresDatabase
+import org.jooq.meta.sqlite.SQLiteDatabase
 
 // TODO[db-tooling] use Config or parameters ?
 object JooqConfiguration {
@@ -39,6 +40,7 @@ object JooqConfiguration {
                             // TODO centralize org.postgresql.Driver & com.mysql.cj.jdbc.Driver
                             DatabaseConfiguration.Driver.psql -> "org.postgresql.Driver"
                             DatabaseConfiguration.Driver.mysql -> "com.mysql.cj.jdbc.Driver"
+                            DatabaseConfiguration.Driver.sqlite -> "org.sqlite.JDBC"
                         }
                     )
                     .withUrl(
@@ -48,6 +50,9 @@ object JooqConfiguration {
 
                             DatabaseConfiguration.Driver.mysql ->
                                 "jdbc:mysql://${conf.host}/${conf.databaseName}?serverTimezone=UTC"
+
+                            DatabaseConfiguration.Driver.sqlite ->
+                                "jdbc:sqlite:${conf.databaseName}"
                         }
                     )
                     .withUser(conf.user)
@@ -64,13 +69,17 @@ object JooqConfiguration {
 
                                     DatabaseConfiguration.Driver.mysql ->
                                         MySQLDatabase::class.java.name
+
+                                    DatabaseConfiguration.Driver.sqlite ->
+                                        SQLiteDatabase::class.java.name
                                 }
                             )
                             .withIncludes(".*")
                             .withExcludes(excludeTables.joinToString(separator = "|"))
                             .apply {
                                 when (conf.driver) {
-                                    DatabaseConfiguration.Driver.psql -> {
+                                    DatabaseConfiguration.Driver.psql,
+                                    DatabaseConfiguration.Driver.sqlite -> {
                                         if (conf.schemas.isNotEmpty()) {
                                             withSchemata(
                                                 conf.schemas.map {
@@ -130,6 +139,8 @@ object JooqConfiguration {
                                                 uuidForcedType
                                             )
                                         }
+
+                                        DatabaseConfiguration.Driver.sqlite -> emptyList()
                                     }
                                 withForcedTypes(forcedTypes)
                             })

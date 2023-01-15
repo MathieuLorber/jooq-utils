@@ -20,7 +20,6 @@ data class DatabaseConfiguration(
     val password: String?,
     // TODO public is default for psql is emptySet() is provided here ?
     val schemas: Set<String>,
-    val executablesPath: String?,
     val pgQuarrel: String?
 ) {
     enum class Driver {
@@ -33,9 +32,6 @@ data class DatabaseConfiguration(
             require(schemas.isEmpty()) {
                 "Mysql schemas list must be empty (database name == schema in Mysql"
             }
-        }
-        if (driver == Driver.psql) {
-            require(executablesPath != null) { "Psql requires non null executablesPath" }
         }
     }
 }

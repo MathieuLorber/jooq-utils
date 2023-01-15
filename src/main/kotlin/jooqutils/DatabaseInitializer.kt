@@ -17,7 +17,7 @@ object DatabaseInitializer {
     private val logger = KotlinLogging.logger {}
 
     // TODO should be useless - jooq does it
-    // TODO schema only
+    // TODO schema only, naming should reflect it
     fun dump(conf: DatabaseConfiguration): ShellRunner.CommandResult {
         logger.debug { "Dump starts" }
         val dump =
@@ -27,9 +27,10 @@ object DatabaseInitializer {
                     // -h bteiwyharfrwixoev1pr-postgresql.services.clever-cloud.com -p 5551 -U
                     // uyugupggbagqpqk0afsb
                     ShellRunner.run(
+                        // TODO new env vars system instead ?
                         "PGPASSWORD=${conf.password}",
                         // FIXME conf path pg_dump
-                        "${conf.executablesPath}/pg_dump",
+                        "pg_dump",
                         "-h",
                         conf.host,
                         "-p",
@@ -62,7 +63,7 @@ object DatabaseInitializer {
         when (conf.driver) {
             // FIXME conf for createdb path
             DatabaseConfiguration.Driver.psql ->
-                ShellRunner.run("${conf.executablesPath}/createdb", conf.databaseName)
+                ShellRunner.run("createdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql ->
                 DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use {
                     statement ->
@@ -74,7 +75,7 @@ object DatabaseInitializer {
         when (conf.driver) {
             // FIXME conf for dropdb path
             DatabaseConfiguration.Driver.psql ->
-                ShellRunner.run("${conf.executablesPath}/dropdb", conf.databaseName)
+                ShellRunner.run("dropdb", conf.databaseName)
             DatabaseConfiguration.Driver.mysql ->
                 DatasourcePool.get(conf.copy(databaseName = "")).connection.createStatement().use {
                     statement ->

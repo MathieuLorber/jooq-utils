@@ -23,8 +23,8 @@ class ResetDatabaseTest {
                 "root",
                 "",
                 setOf("public"),
-                "/usr/local/bin",
-                null)
+                null
+            )
         DatabaseInitializer.createDb(conf)
         DatabaseCleaner.clean(conf, null)
         DatabaseInitializer.initializeSchema(conf, sqlFilesPath, null)
@@ -43,8 +43,8 @@ class ResetDatabaseTest {
                 "mlo",
                 "",
                 setOf("public"),
-                "/usr/local/bin",
-                null)
+                null
+            )
         DatabaseInitializer.createDb(conf)
         DatabaseCleaner.clean(conf, null)
         DatabaseInitializer.initializeSchema(conf, sqlFilesPath, null)

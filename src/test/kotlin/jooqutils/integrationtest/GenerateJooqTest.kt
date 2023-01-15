@@ -23,8 +23,8 @@ class GenerateJooqTest {
                 "root",
                 "",
                 emptySet(),
-                "/usr/local/bin",
-                null)
+                null
+            )
         try {
             DatabaseInitializer.dropDb(conf)
             DatabaseInitializer.createDb(conf)
@@ -33,7 +33,8 @@ class GenerateJooqTest {
                 conf = conf,
                 excludeTables = setOf("SPRING_SESSION", "SPRING_SESSION_ATTRIBUTES"),
                 generatedPackageName = "lite.jooq",
-                generatedCodePath = userDir.resolve("target/generated-for-test"))
+                generatedCodePath = userDir.resolve("target/generated-for-test")
+            )
         } finally {
             DatabaseInitializer.dropDb(conf)
         }

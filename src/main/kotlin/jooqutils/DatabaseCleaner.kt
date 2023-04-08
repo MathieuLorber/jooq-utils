@@ -4,6 +4,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Statement
 import jooqutils.util.DatasourcePool
+import jooqutils.util.StatementExecutor
 import mu.KotlinLogging
 import org.jooq.Table
 import org.jooq.impl.QueryParser
@@ -62,66 +63,13 @@ object DatabaseCleaner {
         val classified = QueryParser.classifyQueries(filteredQueries, conf)
         val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
-            classified.index.forEach { index ->
-                val sql = "drop index if exists ${index}"
-                logger.debug { "Execute \"$sql\"" }
-                statement.execute(sql)
-                sb?.appendLine(sql + ";")
-                sb?.appendLine()
-            }
-            classified.constraints.forEach { c ->
-                val sql =
-                    "alter table ${c.table.schema}.${c.table.name} drop constraint ${c.constraintName}"
-                logger.debug { "Execute \"$sql\"" }
-                statement.execute(sql)
-                sb?.appendLine(sql + ";")
-                sb?.appendLine()
-            }
-            val reverseDependencies = getReverseDependencies(classified.tables)
-            dropTables(reverseDependencies, emptySet(), statement, sb)
+            val tables = classified.tables.map { it.table.name }.joinToString(separator = ", ")
+            logger.debug { "Drop tables $tables" }
+            StatementExecutor.execute(statement, "drop table $tables;")
         }
         if (sqlResultFile != null) {
             sqlResultFile.toFile().parentFile.mkdirs()
             Files.write(sqlResultFile, sb.toString().toByteArray(Charsets.UTF_8))
-        }
-    }
-
-    fun getReverseDependencies(tables: List<TableReferences>): Map<Table<*>, References> {
-        val reversed =
-            tables
-                .flatMap { references ->
-                    references.references.tables.map { it to references.table }
-                }
-                .groupBy { it.first }
-                .mapValues { References(it.value.map { it.second }.toSet()) }
-        // tables with no dependencies disappear in the process
-        val missing =
-            tables.map { it.table }.let { it - reversed.keys }.map { it to References(emptySet()) }
-        return reversed + missing
-    }
-
-    private fun dropTables(
-        reverseDependencies: Map<Table<*>, References>,
-        alreadyDroped: Set<Table<*>>,
-        statement: Statement,
-        sb: StringBuilder?
-    ) {
-        val dropTables =
-            reverseDependencies
-                .entries
-                .filter { (it.value.tables - alreadyDroped).isEmpty() }
-                .map { it.key }
-                .toSet()
-        dropTables.forEach {
-            logger.debug { "Drop table ${it.schema}.${it.name} (if exists)" }
-            val sql = "drop table if exists ${it.schema}.${it.name}"
-            statement.execute(sql)
-            sb?.appendLine(sql + ";")
-            sb?.appendLine()
-        }
-        val remainingRelations = reverseDependencies.filter { it.key !in dropTables }
-        if (remainingRelations.isNotEmpty()) {
-            dropTables(remainingRelations, alreadyDroped + dropTables, statement, sb)
         }
     }
 

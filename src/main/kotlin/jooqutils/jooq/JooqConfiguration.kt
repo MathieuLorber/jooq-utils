@@ -158,10 +158,7 @@ object JooqConfiguration {
                     }
                     .withGenerate(
                         Generate().apply {
-                            isNullableAnnotation = true
-                            nullableAnnotationType = Nullable::class.java.name
-                            isNonnullAnnotation = true
-                            nonnullAnnotationType = Nonnull::class.java.name
+                            isKotlinNotNullRecordAttributes = true
                         })
             )
 }

@@ -23,7 +23,6 @@ class GenerateJooqTest {
                 "root",
                 "",
                 emptySet(),
-                null
             )
         try {
             DatabaseInitializer.dropDb(conf)

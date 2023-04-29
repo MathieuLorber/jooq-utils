@@ -19,8 +19,7 @@ data class DatabaseConfiguration(
     val user: String,
     val password: String?,
     // TODO public is default for psql is emptySet() is provided here ?
-    val schemas: Set<String>,
-    val pgQuarrel: String?
+    val schemas: Set<String>
 ) {
     enum class Driver {
         psql,

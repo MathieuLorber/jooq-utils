@@ -63,10 +63,6 @@ object JooqGeneration {
         diffConf: DatabaseConfiguration,
         destinationPath: Path
     ) {
-        if (conf.pgQuarrel == null) {
-            logger.error { "No pgquarrel configured" }
-            return
-        }
         // TODO
         if (!conf.password.isNullOrEmpty() || !diffConf.password.isNullOrEmpty()) {
             logger.error { "Can't handle passwords with pgquarrel yet" }
@@ -77,7 +73,7 @@ object JooqGeneration {
         if (hashRunDatabase != hashGenerateDatabase) {
             val commandResult =
                 ShellRunner.run(
-                    conf.pgQuarrel,
+                    "pgquarrel",
                     "--source-host=${diffConf.host}",
                     "--source-port=${diffConf.port}",
                     "--source-dbname=${diffConf.databaseName}",

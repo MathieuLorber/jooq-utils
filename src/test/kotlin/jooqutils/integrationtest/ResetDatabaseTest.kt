@@ -23,7 +23,6 @@ class ResetDatabaseTest {
                 "root",
                 "",
                 setOf("public"),
-                null
             )
         DatabaseInitializer.createDb(conf)
         DatabaseCleaner.clean(conf, null)
@@ -43,7 +42,6 @@ class ResetDatabaseTest {
                 "mlo",
                 "",
                 setOf("public"),
-                null
             )
         DatabaseInitializer.createDb(conf)
         DatabaseCleaner.clean(conf, null)

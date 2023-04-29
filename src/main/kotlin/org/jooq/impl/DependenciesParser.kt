@@ -87,7 +87,7 @@ object DependenciesParser {
                                         // see dump
                                     is CreateIndexImpl -> emptyList()
                                     // is Delete/Insert/Update
-                                    is AbstractDelegatingRowCountQuery<*> -> emptyList()
+                                    is AbstractRowCountQuery -> emptyList()
                                     else -> throw NotImplementedError(query.javaClass.name)
                                 }
                             }

@@ -40,7 +40,7 @@ object QueryParser {
         if (parsingError.get()) {
             throw RuntimeException("One or multiple Jooq parsing exception.")
         }
-        val index = jooqQueries.filterIsInstance<CreateIndexImpl>().map { it.`$index`().name }
+        val index = jooqQueries.filterIsInstance<CreateIndexImpl>().mapNotNull { it.`$index`()?.name }
         val constraints =
             jooqQueries
                 .filterIsInstance<AlterTableImpl>()

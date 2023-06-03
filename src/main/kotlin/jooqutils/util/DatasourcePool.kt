@@ -62,6 +62,6 @@ object DatasourcePool {
         val method =
             clazz.methods.find { it.name == methodName }
                 ?: throw IllegalArgumentException("method $methodName unknown")
-        method.let { it.invoke(instance, *params) }
+        method.invoke(instance, *params)
     }
 }

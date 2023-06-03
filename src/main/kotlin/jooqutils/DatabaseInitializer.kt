@@ -8,6 +8,7 @@ import java.sql.Statement
 import jooqutils.util.DatasourcePool
 import jooqutils.util.ShellRunner
 import jooqutils.util.StatementExecutor
+import kotlin.system.exitProcess
 import mu.KotlinLogging
 import org.jooq.Table
 import org.jooq.impl.DependenciesParser
@@ -194,7 +195,7 @@ object DatabaseInitializer {
                     "${it.tables.map { it.name }} depends on ${it.references.tables.map { it.name }}"
                 }
             }
-            System.exit(1)
+            exitProcess(1)
         }
         if (remainingTables.isNotEmpty()) {
             execute(driver, remainingTables, alreadyCreated + created, statement, sb)

@@ -67,7 +67,7 @@ object DatabaseCleaner {
         }
 
         // TODO index vs constraint
-        val classified = QueryParser.classifyQueries(filteredQueries, conf)
+        val classified = QueryParser.classifyQueries(filteredQueries, conf.driver)
         val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
             val tables = classified.tables.map { it.table.name }.joinToString(separator = ", ")

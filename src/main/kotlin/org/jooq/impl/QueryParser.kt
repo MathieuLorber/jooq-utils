@@ -22,14 +22,12 @@ object QueryParser {
     )
 
     // TODO shitty signature obvsly
-    fun classifyQueries(queries: List<SqlQueryString>, conf: DatabaseConfiguration): Queries {
-        val jooqDsl =
-            DSL.using(DatasourcePool.get(conf), DependenciesParser.jooqDialect(conf.driver))
+    fun classifyQueries(queries: List<SqlQueryString>, driver: DatabaseConfiguration.Driver): Queries {
         val parsingError = AtomicBoolean(false)
         val jooqQueries =
             queries.flatMap {
                 try {
-                    val parse = jooqDsl.parser().parse(it.sql)
+                    val parse = DSL.using(DependenciesParser.jooqDialect(driver)).parser().parse(it.sql)
                     parse.queries().toList()
                 } catch (e: ParserException) {
                     logger.error { "Jooq parsing exception : ${it.sql}" }

@@ -2,12 +2,10 @@ package jooqutils
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.sql.Statement
 import jooqutils.util.DatasourcePool
 import jooqutils.util.StatementExecutor
 import mu.KotlinLogging
-import org.jooq.Table
-import org.jooq.impl.QueryParser
+import jooqutils.util.QueryParser
 
 object DatabaseCleaner {
 
@@ -67,7 +65,7 @@ object DatabaseCleaner {
         }
 
         // TODO index vs constraint
-        val classified = QueryParser.classifyQueries(filteredQueries, conf.driver)
+        val classified = QueryParser.   classifyQueries(filteredQueries, conf.driver)
         val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
             val tables = classified.tables.map { it.table.name }.joinToString(separator = ", ")

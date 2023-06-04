@@ -1,13 +1,19 @@
-package org.jooq.impl
+package jooqutils.util
 
 import java.util.concurrent.atomic.AtomicBoolean
 import jooqutils.DatabaseConfiguration
+import org.jooq.impl.DependenciesParser
 import jooqutils.References
 import jooqutils.SqlQueryString
 import jooqutils.TableReferences
-import jooqutils.util.DatasourcePool
 import mu.KotlinLogging
 import org.jooq.Table
+import org.jooq.impl.AlterTableImpl
+import org.jooq.impl.ConstraintImpl
+import org.jooq.impl.CreateIndexImpl
+import org.jooq.impl.CreateTableImpl
+import org.jooq.impl.DSL
+import org.jooq.impl.ParserException
 
 object QueryParser {
 

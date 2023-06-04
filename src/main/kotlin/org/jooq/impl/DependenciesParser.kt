@@ -140,7 +140,7 @@ object DependenciesParser {
                 )
             }
             // TODO is useless actually - check
-            // checkReferences(startTable, map, tableChain + table)
+             checkReferences(startTable, map, tableChain + table)
         }
     }
 }

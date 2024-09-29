@@ -35,7 +35,6 @@ object DatabaseCleaner {
                         .filter { !it.startsWith("SELECT pg_catalog.set_config") }
                         .filter { !it.startsWith("CREATE SEQUENCE") }
                         .filter { !it.startsWith("ALTER SEQUENCE") }
-                        // TODO or no reference !!
                         .filter { !it.startsWith("CREATE UNIQUE INDEX") }
                         .filter { !it.startsWith("ALTER DEFAULT PRIVILEGES FOR ROLE") }
                         .filter { !it.startsWith("CREATE TEXT SEARCH CONFIGURATION") }
@@ -64,7 +63,6 @@ object DatabaseCleaner {
             filteredQueries.forEach { logger.debug { it } }
         }
 
-        // TODO index vs constraint
         val classified = QueryParser.   classifyQueries(filteredQueries, conf.driver)
         val sb = if (sqlResultFile != null) StringBuilder() else null
         DatasourcePool.get(conf).connection.createStatement().use { statement ->
@@ -78,6 +76,5 @@ object DatabaseCleaner {
         }
     }
 
-    // TODO because it seems Jooq doesn't like "VARCHAR(255)" for primary keys =s
     fun simplifyQuery(it: String) = it.replace("VARCHAR", "CHARACTER VARYING")
 }

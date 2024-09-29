@@ -16,20 +16,13 @@ object DatabaseInitializer {
 
     private val logger = KotlinLogging.logger {}
 
-    // TODO should be useless - jooq does it
-    // TODO schema only, naming should reflect it
     fun dump(conf: DatabaseConfiguration): ShellRunner.CommandResult {
         logger.debug { "Dump starts" }
         val dump =
             when (conf.driver) {
                 DatabaseConfiguration.Driver.psql ->
-                    // TODO export PGPASSWORD="$put_here_the_password"
-                    // -h bteiwyharfrwixoev1pr-postgresql.services.clever-cloud.com -p 5551 -U
-                    // uyugupggbagqpqk0afsb
                     ShellRunner.run(
-                        // TODO new env vars system instead ?
                         "PGPASSWORD=${conf.password}",
-                        // FIXME conf path pg_dump
                         "pg_dump",
                         "-h",
                         conf.host,
@@ -40,7 +33,6 @@ object DatabaseInitializer {
                         "-d",
                         conf.databaseName,
                         "-n",
-                        // FIXME is space separator ok ??
                         conf.schemas.joinToString(separator = " "),
                         "--schema-only"
                     )
@@ -71,7 +63,6 @@ object DatabaseInitializer {
 
     fun createDb(conf: DatabaseConfiguration) =
         when (conf.driver) {
-            // FIXME conf for createdb path
             DatabaseConfiguration.Driver.psql ->
                 ShellRunner.run("createdb", conf.databaseName)
 
@@ -89,7 +80,6 @@ object DatabaseInitializer {
 
     fun dropDb(conf: DatabaseConfiguration) {
         when (conf.driver) {
-            // FIXME conf for dropdb path
             DatabaseConfiguration.Driver.psql ->
                 ShellRunner.run("dropdb", conf.databaseName)
 
@@ -149,7 +139,6 @@ object DatabaseInitializer {
             }
         }
 
-    // TODO should fail if user try to insert ?
     private fun execute(
         driver: DatabaseConfiguration.Driver,
         dependenciesList: Set<DependenciesParser.QueryDependencies>,
@@ -211,7 +200,6 @@ object DatabaseInitializer {
 
     fun insert(conf: DatabaseConfiguration, sqlFilesPath: Path) {
         if (!sqlFilesPath.toFile().exists()) {
-            // TODO log ?
             return
         }
         val sqlQueries =

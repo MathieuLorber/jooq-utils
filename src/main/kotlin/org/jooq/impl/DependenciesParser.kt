@@ -26,7 +26,6 @@ object DependenciesParser {
         val references: References
     )
 
-    // FIXME should be in jooqutils package (for logs)
     fun getDependenciesSet(
         sqlQueries: List<SqlQueryString>,
         conf: DatabaseConfiguration
@@ -60,7 +59,6 @@ object DependenciesParser {
                                                         constraint.`$referencesTable`()
 
                                                     else -> {
-                                                        // TODO do something smarter
                                                         logger.debug { constraint }
                                                         null
                                                     }
@@ -75,7 +73,6 @@ object DependenciesParser {
                                                     listOf(it.`$referencesTable`()).filterNotNull()
 
                                                 else -> {
-                                                    // TODO do something smarter
                                                     logger.debug { it }
                                                     emptyList()
                                                 }
@@ -83,8 +80,6 @@ object DependenciesParser {
                                         }
 
                                     is CreateSequenceImpl,
-                                        // TODO permit constraints too !
-                                        // see dump
                                     is CreateIndexImpl -> emptyList()
                                     // is Delete/Insert/Update
                                     is AbstractRowCountQuery -> emptyList()
@@ -139,7 +134,6 @@ object DependenciesParser {
                     "Cyclic reference ${startTable.name} -> $chain -> ${table.name}"
                 )
             }
-            // TODO is useless actually - check
              checkReferences(startTable, map, tableChain + table)
         }
     }

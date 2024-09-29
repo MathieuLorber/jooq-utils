@@ -9,18 +9,13 @@ data class TableReferences(val table: Table<*>, val references: References)
 
 inline class References(val tables: Set<Table<*>>)
 
-// TODO do class by type of db ? So we can specify default port for instance
-// TODO jdbc url ? should be more logical for file dbs (sqlite)
 data class DatabaseConfiguration(
     val driver: Driver,
-    // TODO for the moment the library only handle localhost:5432
     val host: String,
     val port: String,
-    // TODO doc : is the database file for sqlite
     val databaseName: String,
     val user: String,
     val password: String?,
-    // TODO public is default for psql is emptySet() is provided here ?
     val schemas: Set<String>
 ) {
     enum class Driver {
@@ -31,7 +26,6 @@ data class DatabaseConfiguration(
 
     init {
         if (driver == Driver.mysql) {
-            // TODO make it like sqlite will be simpler in code with withSchemata()
             require(schemas.isEmpty()) {
                 "Mysql schemas list must be empty (database name == schema in Mysql)"
             }

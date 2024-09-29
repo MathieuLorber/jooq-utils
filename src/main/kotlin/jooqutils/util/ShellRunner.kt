@@ -30,7 +30,6 @@ object ShellRunner {
             builder.directory(directory.toFile())
         }
         builder.environment().apply {
-            // TODO in conf ! take code from ktts-webapp-template
             put("PATH", "${get("PATH")}:/usr/local/bin")
         }
         val fullCommand = command + params.fold("") { acc, s -> "$acc $s" }

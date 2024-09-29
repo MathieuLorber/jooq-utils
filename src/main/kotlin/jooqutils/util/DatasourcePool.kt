@@ -21,7 +21,6 @@ object DatasourcePool {
             when (configuration.driver) {
 
                 DatabaseConfiguration.Driver.psql ->
-                    // TODO centralize
                     "org.postgresql.ds.PGSimpleDataSource"
 
                 DatabaseConfiguration.Driver.mysql -> "com.mysql.cj.jdbc.MysqlDataSource"

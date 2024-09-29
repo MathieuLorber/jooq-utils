@@ -27,7 +27,6 @@ object QueryParser {
         val tables: List<TableReferences>
     )
 
-    // TODO shitty signature obvsly
     fun classifyQueries(queries: List<SqlQueryString>, driver: DatabaseConfiguration.Driver): Queries {
         val parsingError = AtomicBoolean(false)
         val jooqQueries =
@@ -60,7 +59,6 @@ object QueryParser {
                         }
 
                         else -> {
-                            // TODO do something smarter
                             logger.debug { it }
                             throw RuntimeException()
                         }
@@ -75,7 +73,6 @@ object QueryParser {
                             when (constraint) {
                                 is ConstraintImpl -> constraint.`$referencesTable`()
                                 else -> {
-                                    // TODO do something smarter
                                     logger.debug { constraint }
                                     null
                                 }

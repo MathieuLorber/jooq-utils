@@ -5,6 +5,42 @@
       "last_modified": "2026-03-05T18:52:33Z",
       "resolved": "github:NixOS/nixpkgs/917fec990948658ef1ccd07cef2a1ef060786846?lastModified=1772736753&narHash=sha256-au%2Fm3%2BEuBLoSzWUCb64a%2FMZq6QUtOV8oC0D9tY2scPQ%3D"
     },
+    "jdk@24.0.2+12": {
+      "last_modified": "2025-10-07T08:41:47Z",
+      "resolved": "github:NixOS/nixpkgs/bce5fe2bb998488d8e7e7856315f90496723793c#jdk24",
+      "source": "devbox-search",
+      "version": "24.0.2+12",
+      "systems": {
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/z2nn6sw6b2g81dnz78qcjzzwziscg6fz-openjdk-24.0.2+12",
+              "default": true
+            },
+            {
+              "name": "debug",
+              "path": "/nix/store/mwwknz6yljxky4yg4n89qbambnpl49m7-openjdk-24.0.2+12-debug"
+            }
+          ],
+          "store_path": "/nix/store/z2nn6sw6b2g81dnz78qcjzzwziscg6fz-openjdk-24.0.2+12"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6m9qix510065gsn2122kzb9k6mp0hcws-openjdk-24.0.2+12",
+              "default": true
+            },
+            {
+              "name": "debug",
+              "path": "/nix/store/yq496aqdbj3l1b1xrf40frfxqnwqxfsj-openjdk-24.0.2+12-debug"
+            }
+          ],
+          "store_path": "/nix/store/6m9qix510065gsn2122kzb9k6mp0hcws-openjdk-24.0.2+12"
+        }
+      }
+    },
     "maven@3.9.12": {
       "last_modified": "2026-02-23T15:40:43Z",
       "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#maven",
